@@ -97,6 +97,12 @@ Pré-requis:
 - [ ] Livrer un pipeline pilote complet source soins.
 - [ ] Ajouter notebook de validation et graphes de contrôle.
 
+## Plan d'implémentation Livrable 2
+
+Le plan détaillé et structuré pour le Livrable 2 (stack, workflow Python, GitFlow PR/MR develop/main, tâches par fichiers, répartition 1 personne ou 2 personnes) est disponible ici:
+
+- [[Plan_Implementation_Livrable_2_CHU]]
+
 ## Contribution équipe
 
 Projet réalisé en équipe de 4.
@@ -107,4 +113,3 @@ Projet réalisé en équipe de 4.
 - D: Qualité, conformité RGPD, validation notebook.
 
 ## Références projet
-
