@@ -1,0 +1,17 @@
+# GitHub Copilot Instructions
+.github/copilot-instructions.md
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.venv/
+venv/
+
+# Environment
+.env
+
+# OS
+.DS_Store
+Thumbs.db
