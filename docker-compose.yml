@@ -1,0 +1,26 @@
+services:
+  postgres:
+    # Base unique pour le socle: simple à lancer pour toute l'équipe.
+    image: postgres:16-alpine
+    container_name: chu_postgres
+    restart: unless-stopped
+    env_file:
+      # Si .env n'existe pas encore, on peut quand meme valider la config.
+      - path: .env
+        required: false
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      # Données persistées en local.
+      - postgres_data:/var/lib/postgresql/data
+      # Scripts SQL exécutés au premier démarrage.
+      - ./sql/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  # Volume Docker pour garder la base entre les redémarrages.
+  postgres_data:
