@@ -1,17 +1,12 @@
-# Dépendances Python du projet CHU.
-# Installées dans l'image Docker Airflow (docker/airflow.Dockerfile).
-# Pour install local: pip install -r requirements.txt
-
-# Airflow providers
-apache-airflow-providers-postgres==5.10.2
-apache-airflow-providers-common-sql==1.14.2
+# Packages supplémentaires au-delà de ce que l'image Airflow 2.9.2 fournit.
+# NE PAS ajouter: apache-airflow, apache-airflow-providers-*, SQLAlchemy
+# (déjà inclus dans l'image — les réinstaller crée des conflits de version).
 
 # Data processing
 pandas==2.2.2
 pyarrow==16.1.0
 
-# Database
-SQLAlchemy==2.0.36
+# Database (driver PostgreSQL pour les scripts extract/load)
 psycopg2-binary==2.9.9
 
 # Utilities
