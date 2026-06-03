@@ -62,10 +62,7 @@ chu-pipeline/
 **Restitution:** PowerBI connecté à Hive (Gold)
 
 ## Documentation
-
-- **[WORKFLOW.md](docs/WORKFLOW.md)** — Git branching, PR process, tests
-- **[ROLES.md](docs/ROLES.md)** — Rôles, responsabilités, qui touche quoi
-- **[ARCHITECTURE.md](docs/ARCHITECTURE.md)** — Stack technique, Hive, optimisations
+- (*WIP*)
 
 ## Roadmap
 
