@@ -1,0 +1,9 @@
+# Force LF sur tous les fichiers texte pour eviter les erreurs
+# "bad interpreter: /bin/bash^M" dans les containers Linux.
+* text=auto eol=lf
+
+# Binaires: pas de conversion
+*.pbix binary
+*.png binary
+*.pdf binary
+*.parquet binary

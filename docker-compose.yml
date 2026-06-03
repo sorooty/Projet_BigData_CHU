@@ -1,19 +1,47 @@
+# CHU Data Pipeline — Docker Compose
+# Démarre tout: docker-compose up -d
+# Interface Airflow: http://localhost:8080 (airflow / airflow)
+# Seul Seyni modifie ce fichier.
+
+x-airflow-common: &airflow-common
+  build:
+    context: .
+    dockerfile: docker/airflow.Dockerfile
+  env_file:
+    - .env
+  environment:
+    AIRFLOW__CORE__EXECUTOR: LocalExecutor
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${AIRFLOW_DB:-airflow}
+    AIRFLOW__CORE__FERNET_KEY: ${AIRFLOW_FERNET_KEY}
+    AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "true"
+    AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+    AIRFLOW__API__AUTH_BACKENDS: airflow.api.auth.backend.basic_auth
+    PYTHONPATH: /opt/airflow/dags:/opt/airflow/sql/scripts
+  volumes:
+    - ./airflow/dags:/opt/airflow/dags
+    - ./sql:/opt/airflow/sql
+    - ./data:/opt/airflow/data
+    - airflow_logs:/opt/airflow/logs
+  depends_on:
+    postgres:
+      condition: service_healthy
+
 services:
+
   postgres:
-    # Base unique pour le socle: simple à lancer pour toute l'équipe.
     image: postgres:16-alpine
     container_name: chu_postgres
     restart: unless-stopped
     env_file:
-      # Si .env n'existe pas encore, on peut quand meme valider la config.
-      - path: .env
-        required: false
+      - .env
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
     volumes:
-      # Données persistées en local.
       - postgres_data:/var/lib/postgresql/data
-      # Scripts SQL exécutés au premier démarrage.
       - ./sql/init:/docker-entrypoint-initdb.d:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
@@ -21,6 +49,52 @@ services:
       timeout: 5s
       retries: 5
 
+  airflow-init:
+    <<: *airflow-common
+    container_name: chu_airflow_init
+    restart: "no"
+    entrypoint: /bin/bash
+    command:
+      - -c
+      - |
+        airflow db upgrade
+        airflow users create \
+          --username ${AIRFLOW_ADMIN_USER:-airflow} \
+          --password ${AIRFLOW_ADMIN_PASSWORD:-airflow} \
+          --firstname Admin \
+          --lastname CHU \
+          --role Admin \
+          --email admin@chu-pipeline.local
+
+  airflow-webserver:
+    <<: *airflow-common
+    container_name: chu_airflow_webserver
+    restart: unless-stopped
+    command: webserver
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    depends_on:
+      postgres:
+        condition: service_healthy
+      airflow-init:
+        condition: service_completed_successfully
+
+  airflow-scheduler:
+    <<: *airflow-common
+    container_name: chu_airflow_scheduler
+    restart: unless-stopped
+    command: scheduler
+    depends_on:
+      postgres:
+        condition: service_healthy
+      airflow-init:
+        condition: service_completed_successfully
+
 volumes:
-  # Volume Docker pour garder la base entre les redémarrages.
   postgres_data:
+  airflow_logs:
