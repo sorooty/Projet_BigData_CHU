@@ -67,7 +67,7 @@ chu-pipeline/
 ## Roadmap
 
 - [x] Phase 1: Restructuration dirs + stubs
-- [ ] Phase 2: Docker (compose, Dockerfile, env)
+- [x] Phase 2: Docker (compose, Dockerfile, env)
 - [ ] Phase 3: DAGs complets + utils
 - [ ] Phase 4: Collègues écrivent scripts
 - [ ] Phase 5: PowerBI + validation
