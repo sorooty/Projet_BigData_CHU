@@ -50,12 +50,13 @@ with DAG(
         doc_md="Extraction CSV sources (etablissements, deces, satisfaction) vers Bronze",
     )
 
-    extract_ftp = PythonOperator(
-        task_id="extract_ftp",
-        python_callable=run_python_script,
-        op_kwargs={"script": "extract/extract_ftp.py"},
-        doc_md="Extraction FTP optionnelle vers raw (activee par variables d'environnement)",
-    )
+    # Perspective seulement si une source FTP existe un jour.
+    # extract_ftp = PythonOperator(
+    #     task_id="extract_ftp",
+    #     python_callable=run_python_script,
+    #     op_kwargs={"script": "extract/extract_ftp.py"},
+    #     doc_md="Extraction FTP optionnelle vers raw (activee par variables d'environnement)",
+    # )
 
     # LOAD
 
@@ -98,5 +99,5 @@ with DAG(
 
     # DEPENDENCIES
 
-    [extract_postgres, extract_csv, extract_ftp] >> load_staging_consultations
+    [extract_postgres, extract_csv] >> load_staging_consultations
     load_staging_consultations >> transform_consultations >> validate_gold >> notify_success
