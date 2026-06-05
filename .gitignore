@@ -22,6 +22,8 @@ Thumbs.db
 project_data/
 data/bronze/
 data/silver/
+data/raw/*
+!data/raw/.gitkeep
 
 # Airflow
 airflow/logs/

@@ -29,6 +29,7 @@ PG_PASSWORD = os.getenv("POSTGRES_PASSWORD", "chu_password_change_me11")
 PG_DATABASE = os.getenv("POSTGRES_DB", "chu_data")
 PG_SOURCE_DATABASE = os.getenv("POSTGRES_SOURCE_DB", "postgres")
 PG_SOURCE_TABLE = os.getenv("POSTGRES_SOURCE_TABLE", "consultation")
+PG_SOURCE_FILTER = os.getenv("POSTGRES_SOURCE_FILTER", "").strip()
 
 
 def _resolve_source_table(table_name: str) -> str:
@@ -68,9 +69,14 @@ def extract_consultations() -> None:
                 id_etablissement,
                 montant
             FROM {table_name}
-            WHERE date_consultation >= CURRENT_DATE - INTERVAL '1 day'
             ORDER BY date_consultation DESC
         """.format(table_name=source_table)
+
+        if PG_SOURCE_FILTER:
+            query = query.replace(
+                "            ORDER BY date_consultation DESC",
+                f"            WHERE {PG_SOURCE_FILTER}\n            ORDER BY date_consultation DESC",
+            )
         
         df = pd.read_sql(query, conn)
         logger.info(f"Recupere {len(df)} consultations")

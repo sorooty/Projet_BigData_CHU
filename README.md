@@ -2,7 +2,7 @@
 
 Plateforme Big Data décisionnelle pour le contexte CHU.
 
-Objectif: orchestrer les pipelines ETL (Airflow), ingérer des sources hétérogènes (PostgreSQL, CSV, FTP), transformer avec Hive, et alimenter des rapports PowerBI.
+Objectif: orchestrer les pipelines ETL (Airflow), ingerer des sources heterogenes (PostgreSQL, CSV, FTP), transformer les donnees, et alimenter des rapports PowerBI.
 
 ## Structure du projet
 
@@ -23,9 +23,10 @@ chu-pipeline/
 ├── docker/                       # Dockerfiles + docker-compose.yml
 ├── powerbi/                      # Models + rapports PowerBI
 ├── data/
-│   ├── bronze/                   # Raw extracted files (CSV, Parquet)
-│   ├── silver/                   # Cleaned, normalized files
-│   └── gold/                     # Hive tables (analytics-ready)
+│   ├── raw/                      # Fichiers sources CSV locaux (non versionnes)
+│   ├── bronze/                   # Extractions brutes produites par les scripts
+│   ├── silver/                   # Donnees nettoyees, normalisees
+│   └── gold/                     # Donnees analytiques
 ├── docs/
 │   ├── WORKFLOW.md              # Git + PR process
 │   ├── ROLES.md                 # Rôles & responsabilités
@@ -48,6 +49,14 @@ chu-pipeline/
 3. **Voir les DAGs:**
    - Airflow UI > DAGs
    - DAG `chu_daily_pipeline` doit être visible
+
+## Donnees sources et dossier raw
+
+- Les CSV sources a traiter doivent etre places dans `data/raw/` (local).
+- Dans le conteneur Airflow, ce dossier est monte en `/opt/airflow/data/raw`.
+- Le script `sql/scripts/extract/extract_csv.py` lit uniquement les fichiers `*.csv` presents directement dans ce dossier.
+- Les fichiers de `data/raw/` sont ignores par Git. Seul `data/raw/.gitkeep` est versionne pour conserver le dossier.
+- Le dump PostgreSQL source reste dans `project_data/BDD PostgreSQL/DATA2023` et sert a alimenter la base source `postgres`.
 
 ## Architecture
 

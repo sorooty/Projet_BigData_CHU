@@ -1,5 +1,5 @@
 -- ============================================================
--- DIMENSIONS CONFORMES (partagées entre plusieurs tables de faits)
+-- DIMENSIONS (A CHANGER - OMAR et ABDOULAYE) (partagées entre plusieurs tables de faits)
 -- ============================================================
 
 CREATE TABLE IF NOT EXISTS gold.dim_temps (
