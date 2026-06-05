@@ -1,37 +1,38 @@
 """
-Validation qualité - Vérifie les données Gold
-
-Cette tâche:
-1. Vérifie les tables existantes
-2. Check nulls, doublons
-3. Valide les contraintes métier
-
-À développer selon besoins.
+Validation qualite du slice consultations dans Gold.
 """
 
 import logging
+
+from utils import log_step, validate_table
 
 logger = logging.getLogger(__name__)
 
 
 def validate_gold() -> None:
-    """Validation qualité données Gold."""
+    """Controle les tables attendues pour le pipeline consultations."""
     try:
-        logger.info("🔹 Démarrage validation qualité Gold")
-        
-        # À implémenter: vrai checks
-        # - SELECT COUNT(*) FROM gold.fait_consultation
-        # - Vérifier pas de nulls où pas ok
-        # - Vérifier pas de doublons
-        # - Vérifier ranges de valeurs
-        
-        logger.info("✅ Validation réussie (stubs)")
-        
+        log_step("validate_gold", "starting")
+
+        required_tables = [
+            ("gold.stg_consultations_raw", {"min_rows": 1}),
+            ("gold.dim_temps", {"min_rows": 1}),
+            ("gold.dim_patient", {"min_rows": 1}),
+            ("gold.dim_etablissement", {"min_rows": 1}),
+            ("gold.dim_diagnostic", {"min_rows": 1}),
+            ("gold.fait_consultation", {"min_rows": 1}),
+        ]
+
+        for table_name, checks in required_tables:
+            validate_table(table_name, checks)
+
+        log_step("validate_gold", "success", {"tables": len(required_tables)})
+
     except Exception as e:
-        logger.error(f"❌ Erreur validation: {str(e)}")
+        log_step("validate_gold", "failed", {"error": str(e)})
         raise
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     validate_gold()

@@ -60,6 +60,27 @@ Créer une PR sur GitHub avec:
 - Répond aux remarques
 - Seyni merge quand ok
 
+### 7. Guide rapide pour les camarades
+Travaillez uniquement dans `sql/scripts/` et poussez vos changements sur une branche `feature/*` vers `origin`.
+
+**Fichiers a creer ou modifier selon le besoin:**
+- `sql/scripts/extract/*.py` pour les extractions PostgreSQL, CSV ou FTP
+- `sql/scripts/transform/*.sql` pour les transformations HiveQL et la creation des dimensions ou des faits
+- `sql/scripts/load/*.py` pour le chargement du staging ou de la zone cible
+- `sql/scripts/validate_gold.py` seulement si vous ajoutez des controles de qualite relies a votre lot
+
+**A ne pas toucher:**
+- `airflow/dags/chu_daily_pipeline.py`
+- `docker-compose.yml`
+- `Dockerfile`
+- `requirements.txt`
+- `.env.example`
+
+**Lieu de push:**
+1. Créer une branche locale du type `feature/nom-job`
+2. Push vers `origin` sur cette branche
+3. Ouvrir une PR vers `main`
+
 ---
 
 ## Pour Chef de Projet (Seyni)
