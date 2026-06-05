@@ -10,6 +10,7 @@ Execution idempotente.
 """
 
 import os
+import re
 import psycopg2
 import pandas as pd
 from pathlib import Path
@@ -26,7 +27,20 @@ PG_HOST = os.getenv("POSTGRES_HOST", "postgres")
 PG_USER = os.getenv("POSTGRES_USER", "chu_admin")
 PG_PASSWORD = os.getenv("POSTGRES_PASSWORD", "chu_password_change_me11")
 PG_DATABASE = os.getenv("POSTGRES_DB", "chu_data")
+PG_SOURCE_DATABASE = os.getenv("POSTGRES_SOURCE_DB", "postgres")
 PG_SOURCE_TABLE = os.getenv("POSTGRES_SOURCE_TABLE", "consultation")
+
+
+def _resolve_source_table(table_name: str) -> str:
+    """Retourne une table source qualifiee dans operational par defaut."""
+    candidate = table_name.strip()
+    if "." not in candidate:
+        candidate = f"operational.{candidate}"
+
+    if not re.fullmatch(r"[a-zA-Z_][a-zA-Z0-9_]*\.[a-zA-Z_][a-zA-Z0-9_]*", candidate):
+        raise ValueError(f"Nom de table source invalide: {table_name}")
+
+    return candidate
 
 
 def extract_consultations() -> None:
@@ -37,13 +51,14 @@ def extract_consultations() -> None:
         # Connexion PostgreSQL
         conn = psycopg2.connect(
             host=PG_HOST,
-            database=PG_DATABASE,
+            database=PG_SOURCE_DATABASE,
             user=PG_USER,
             password=PG_PASSWORD
         )
         logger.info("Connecte a PostgreSQL")
         
         # Requete configurable depuis l'environnement
+        source_table = _resolve_source_table(PG_SOURCE_TABLE)
         query = """
             SELECT 
                 id_consultation,
@@ -55,7 +70,7 @@ def extract_consultations() -> None:
             FROM {table_name}
             WHERE date_consultation >= CURRENT_DATE - INTERVAL '1 day'
             ORDER BY date_consultation DESC
-        """.format(table_name=PG_SOURCE_TABLE)
+        """.format(table_name=source_table)
         
         df = pd.read_sql(query, conn)
         logger.info(f"Recupere {len(df)} consultations")

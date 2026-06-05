@@ -20,23 +20,23 @@ ORDER BY 1;
 INSERT INTO gold.dim_patient (id_patient, sexe, age)
 SELECT DISTINCT
     s.id_patient::TEXT,
-    NULL,
-    NULL
+    NULL::TEXT,
+    NULL::INT
 FROM gold.stg_consultations_raw s
 ORDER BY 1;
 
 INSERT INTO gold.dim_etablissement (finess, nom, id_geo)
 SELECT DISTINCT
     s.id_etablissement::TEXT,
-    NULL,
-    NULL
+    NULL::TEXT,
+    NULL::INT
 FROM gold.stg_consultations_raw s
 ORDER BY 1;
 
 INSERT INTO gold.dim_diagnostic (code_diag, libelle)
 SELECT DISTINCT
     COALESCE(NULLIF(TRIM(s.diagnostic), ''), 'UNKNOWN') AS code_diag,
-    NULL
+    NULL::TEXT
 FROM gold.stg_consultations_raw s
 ORDER BY 1;
 
