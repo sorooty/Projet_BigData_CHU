@@ -1,61 +1,34 @@
--- Transformation consultations pour le modele gold PostgreSQL.
--- La table de staging gold.stg_consultations_raw est chargee avant ce script.
+-- Nettoyage préalable si Seyni réexécute le job pour la même journée (Idempotence)
+-- En production, on peut aussi filtrer ou faire un DELETE basé sur le lot du jour.
+TRUNCATE TABLE gold.fait_consultation;
 
-TRUNCATE TABLE
-    gold.fait_consultation,
-    gold.dim_temps,
-    gold.dim_patient,
-    gold.dim_etablissement,
-    gold.dim_diagnostic
-RESTART IDENTITY CASCADE;
-
-INSERT INTO gold.dim_temps (id_temps, date_complete, annee)
-SELECT DISTINCT
-    TO_CHAR(s.date_consultation::date, 'YYYYMMDD')::INT AS id_temps,
-    s.date_consultation::date AS date_complete,
-    EXTRACT(YEAR FROM s.date_consultation::date)::INT AS annee
-FROM gold.stg_consultations_raw s
-ORDER BY 1;
-
-INSERT INTO gold.dim_patient (id_patient, sexe, age)
-SELECT DISTINCT
-    s.id_patient::TEXT,
-    NULL::TEXT,
-    NULL::INT
-FROM gold.stg_consultations_raw s
-ORDER BY 1;
-
-INSERT INTO gold.dim_etablissement (finess, nom, id_geo)
-SELECT DISTINCT
-    s.id_etablissement::TEXT,
-    NULL::TEXT,
-    NULL::INT
-FROM gold.stg_consultations_raw s
-ORDER BY 1;
-
-INSERT INTO gold.dim_diagnostic (code_diag, libelle)
-SELECT DISTINCT
-    COALESCE(NULLIF(TRIM(s.diagnostic), ''), 'UNKNOWN') AS code_diag,
-    NULL::TEXT
-FROM gold.stg_consultations_raw s
-ORDER BY 1;
-
+-- Insertion finale dans la table de faits
 INSERT INTO gold.fait_consultation (
     id_temps,
     id_patient,
-    finess,
+    id_etablissement,
     id_professionnel,
     code_diag,
     duree_consultation,
     nb_consultations
 )
-SELECT
-    TO_CHAR(s.date_consultation::date, 'YYYYMMDD')::INT AS id_temps,
-    s.id_patient::TEXT AS id_patient,
-    s.id_etablissement::TEXT AS finess,
-    NULL AS id_professionnel,
-    COALESCE(NULLIF(TRIM(s.diagnostic), ''), 'UNKNOWN') AS code_diag,
-    NULL AS duree_consultation,
-    1 AS nb_consultations
-FROM gold.stg_consultations_raw s
-ORDER BY 1, 2, 3;
+SELECT 
+    -- 1. Transformation de la date en ID Temps (ex: 2026-06-05 -> 20260605)
+    TO_CHAR(stg.date_consultation_src::date, 'YYYYMMDD')::INT as id_temps,
+    
+    -- 2. Récupération des clés étrangères depuis nos dimensions propres
+    p.id_patient,
+    e.id_etablissement,
+    prof.id_professionnel,
+    COALESCE(d.code_diag, 'UNKNOWN') as code_diag,
+    
+    -- 3. Injection des mesures physiques
+    COALESCE(stg.duree_consult_src, 0) as duree_consultation,
+    1 as nb_consultations -- Chaque ligne du staging équivaut à 1 acte de consultation
+    
+FROM gold.stg_consultations_raw stg
+-- Jointures cruciales avec tes dimensions pour récupérer les clés techniques (Surrogate Keys)
+INNER JOIN gold.dim_patient p ON stg.id_patient_src = p.patient_code
+INNER JOIN gold.dim_etablissement e ON stg.finess_src = e.finess
+INNER JOIN gold.dim_professionnel prof ON stg.id_prof_src = prof.id_professionnel
+LEFT JOIN gold.dim_diagnostic d ON TRIM(stg.code_diag_src) = d.code_diag;
