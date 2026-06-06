@@ -1,105 +1,163 @@
 """
-Extraction PostgreSQL - Consultations et donnees sources.
+Extraction PostgreSQL - Consultations et données sources
 
-Cette tache:
-1. Se connecte a PostgreSQL
-2. Recupere les consultations depuis hier
-3. Sauvegarde le CSV dans le dossier Bronze du conteneur Airflow
+Cette tâche:
+1. Se connecte à PostgreSQL
+2. Récupère les consultations depuis hier
+3. Sauvegarde en CSV dans /data/bronze/
 
-Execution idempotente.
+Idempotent: peut s'exécuter plusieurs fois sans casse.
 """
 
-import os
-import re
 import psycopg2
 import pandas as pd
 from pathlib import Path
+import sys
 import logging
 
 # Logger
 logger = logging.getLogger(__name__)
 
-DATA_ROOT = Path(os.getenv("AIRFLOW_DATA_DIR", "/opt/airflow/data"))
-BRONZE_DIR = DATA_ROOT / "bronze"
-
 # Config PostgreSQL (depuis env)
-PG_HOST = os.getenv("POSTGRES_HOST", "postgres")
-PG_USER = os.getenv("POSTGRES_USER", "chu_admin")
-PG_PASSWORD = os.getenv("POSTGRES_PASSWORD", "chu_password_change_me11")
-PG_DATABASE = os.getenv("POSTGRES_DB", "chu_data")
-PG_SOURCE_DATABASE = os.getenv("POSTGRES_SOURCE_DB", "postgres")
-PG_SOURCE_TABLE = os.getenv("POSTGRES_SOURCE_TABLE", "consultation")
-PG_SOURCE_FILTER = os.getenv("POSTGRES_SOURCE_FILTER", "").strip()
+PG_HOST = 'postgres'  # ou from os.getenv('POSTGRES_HOST')
+PG_USER = 'admin'     # ou from os.getenv('POSTGRES_USER')
+PG_PASSWORD = 'admin' # ou from os.getenv('POSTGRES_PASSWORD')
+PG_DATABASE = 'chu'   # ou from os.getenv('POSTGRES_DB')
 
 
-def _resolve_source_table(table_name: str) -> str:
-    """Retourne une table source qualifiee dans operational par defaut."""
-    candidate = table_name.strip()
-    if "." not in candidate:
-        candidate = f"operational.{candidate}"
-
-    if not re.fullmatch(r"[a-zA-Z_][a-zA-Z0-9_]*\.[a-zA-Z_][a-zA-Z0-9_]*", candidate):
-        raise ValueError(f"Nom de table source invalide: {table_name}")
-
-    return candidate
-
-
-def extract_consultations() -> None:
+def extract_date() -> None:
     """Extraction principale."""
     try:
-        logger.info("Demarrage extraction PostgreSQL consultations")
+        logger.info("🔹 Démarrage extraction PostgreSQL (table date)")
         
         # Connexion PostgreSQL
         conn = psycopg2.connect(
             host=PG_HOST,
-            database=PG_SOURCE_DATABASE,
+            database=PG_DATABASE,
             user=PG_USER,
             password=PG_PASSWORD
         )
-        logger.info("Connecte a PostgreSQL")
+        logger.info("✓ Connecté à PostgreSQL")
         
-        # Requete configurable depuis l'environnement
-        source_table = _resolve_source_table(PG_SOURCE_TABLE)
+        # Requête: extraire le contenu de la table "date" (colonnes date1, date2)
         query = """
-            SELECT 
-                c.id_consultation,
-                c.id_patient,
-                c.date_consultation,
-                c.diagnostic,
-                c.id_etablissement,
-                c.montant,
-                p.sexe,
-                p.age
-            FROM {table_name} c
-            LEFT JOIN operational.patient p ON p.id_patient = c.id_patient
-            ORDER BY c.date_consultation DESC
-        """.format(table_name=source_table)
+            SELECT
+                date1,
+                date2
+            FROM "date"
+            ORDER BY date1 ASC
+        """
 
-        if PG_SOURCE_FILTER:
-            query = query.replace(
-                "            ORDER BY date_consultation DESC",
-                f"            WHERE {PG_SOURCE_FILTER}\n            ORDER BY date_consultation DESC",
-            )
-        
         df = pd.read_sql(query, conn)
-        logger.info(f"Recupere {len(df)} consultations")
+        logger.info(f"✓ Récupéré {len(df)} enregistrements depuis la table 'date'")
         
-        BRONZE_DIR.mkdir(parents=True, exist_ok=True)
-
+        # Créer dossier Bronze si n'existe pas
+        output_dir = Path('/data/bronze')
+        output_dir.mkdir(parents=True, exist_ok=True)
+        
         # Sauvegarder en CSV
-        output_file = BRONZE_DIR / "consultations_raw.csv"
+        output_file = output_dir / 'dates_raw.csv'
         df.to_csv(output_file, index=False)
-        logger.info(f"Sauvegarde en {output_file}")
+        logger.info(f"✓ Sauvegardé en {output_file}")
         
         conn.close()
-        logger.info("Extraction PostgreSQL reussie")
+        logger.info("✅ Extraction PostgreSQL réussie")
         
     except Exception as e:
-        logger.error(f"Erreur extraction PostgreSQL: {str(e)}")
+        logger.error(f"❌ Erreur extraction PostgreSQL: {str(e)}")
+        raise
+
+
+def extract_diagnostic() -> None:
+    """Extraction principale."""
+    try:
+        logger.info("🔹 Démarrage extraction PostgreSQL (table diagnostic)")
+        
+        # Connexion PostgreSQL
+        conn = psycopg2.connect(
+            host=PG_HOST,
+            database=PG_DATABASE,
+            user=PG_USER,
+            password=PG_PASSWORD
+        )
+        logger.info("✓ Connecté à PostgreSQL")
+        
+        # Requête: extraire le contenu de la table "date" (colonnes date1, date2)
+        query = """
+            SELECT
+                Code_diag,
+                Diagnostic
+            FROM "Diagnostic"
+            ORDER BY Code_diag ASC
+        """
+
+        df = pd.read_sql(query, conn)
+        logger.info(f"✓ Récupéré {len(df)} enregistrements depuis la table 'date'")
+        
+        # Créer dossier Bronze si n'existe pas
+        output_dir = Path('/data/bronze')
+        output_dir.mkdir(parents=True, exist_ok=True)
+        
+        # Sauvegarder en CSV
+        output_file = output_dir / 'diagnostic_raw.csv'
+        df.to_csv(output_file, index=False)
+        logger.info(f"✓ Sauvegardé en {output_file}")
+        
+        conn.close()
+        logger.info("✅ Extraction PostgreSQL réussie")
+        
+    except Exception as e:
+        logger.error(f"❌ Erreur extraction PostgreSQL: {str(e)}")
+        raise
+
+
+def extract_patient() -> None:
+    """Extraction principale."""
+    try:
+        logger.info("🔹 Démarrage extraction PostgreSQL (table patient)")
+        
+        # Connexion PostgreSQL
+        conn = psycopg2.connect(
+            host=PG_HOST,
+            database=PG_DATABASE,
+            user=PG_USER,
+            password=PG_PASSWORD
+        )
+        logger.info("✓ Connecté à PostgreSQL")
+        
+        # Requête: extraire le contenu de la table "date" (colonnes date1, date2)
+        query = """
+            SELECT
+                Id_patient,
+                Sexe,
+                Age
+            FROM "Patient"
+            ORDER BY Id_patient ASC
+        """
+
+        df = pd.read_sql(query, conn)
+        logger.info(f"✓ Récupéré {len(df)} enregistrements depuis la table 'date'")
+        
+        # Créer dossier Bronze si n'existe pas
+        output_dir = Path('/data/bronze')
+        output_dir.mkdir(parents=True, exist_ok=True)
+        
+        # Sauvegarder en CSV
+        output_file = output_dir / 'patient_raw.csv'
+        df.to_csv(output_file, index=False)
+        logger.info(f"✓ Sauvegardé en {output_file}")
+        
+        conn.close()
+        logger.info("✅ Extraction PostgreSQL réussie")
+        
+    except Exception as e:
+        logger.error(f"❌ Erreur extraction PostgreSQL: {str(e)}")
         raise
 
 
 if __name__ == '__main__':
-    # Execution standalone: python extract_postgres.py
+    # Exécution standalone: python extract_postgres.py
     logging.basicConfig(level=logging.INFO)
-    extract_consultations()
+    extract_date()
+    extract_diagnostic()
+    extract_patient()

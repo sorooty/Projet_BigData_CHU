@@ -1,5 +1,5 @@
 -- ============================================================
--- DIMENSIONS (partagées entre plusieurs tables de faits)
+-- DIMENSIONS CONFORMES (partagées entre plusieurs tables de faits)
 -- ============================================================
 
 CREATE TABLE IF NOT EXISTS gold.dim_temps (
@@ -55,7 +55,6 @@ CREATE TABLE IF NOT EXISTS gold.fait_hospitalisation (
     -- Mesures
     nb_hospitalisations INT NOT NULL DEFAULT 1,
     loaded_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()
-    -- ETL: alimentation future (source hospitalisations non encore mappee)
 );
 
 CREATE TABLE IF NOT EXISTS gold.fait_consultation (
