@@ -62,14 +62,17 @@ def extract_consultations() -> None:
         source_table = _resolve_source_table(PG_SOURCE_TABLE)
         query = """
             SELECT 
-                id_consultation,
-                id_patient,
-                date_consultation,
-                diagnostic,
-                id_etablissement,
-                montant
-            FROM {table_name}
-            ORDER BY date_consultation DESC
+                c.id_consultation,
+                c.id_patient,
+                c.date_consultation,
+                c.diagnostic,
+                c.id_etablissement,
+                c.montant,
+                p.sexe,
+                p.age
+            FROM {table_name} c
+            LEFT JOIN operational.patient p ON p.id_patient = c.id_patient
+            ORDER BY c.date_consultation DESC
         """.format(table_name=source_table)
 
         if PG_SOURCE_FILTER:

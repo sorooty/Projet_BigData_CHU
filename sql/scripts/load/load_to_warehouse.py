@@ -57,6 +57,8 @@ def load_to_warehouse() -> None:
                     diagnostic TEXT,
                     id_etablissement TEXT NOT NULL,
                     montant NUMERIC(12, 2),
+                    sexe TEXT,
+                    age INT,
                     loaded_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
                 )
                 """
@@ -72,7 +74,9 @@ def load_to_warehouse() -> None:
                         date_consultation,
                         diagnostic,
                         id_etablissement,
-                        montant
+                        montant,
+                        sexe,
+                        age
                     ) FROM STDIN WITH (FORMAT csv, HEADER true)
                     """,
                     stream,

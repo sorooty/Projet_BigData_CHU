@@ -20,10 +20,9 @@ ORDER BY 1;
 INSERT INTO gold.dim_patient (id_patient, sexe, age)
 SELECT DISTINCT ON (s.id_patient)
     s.id_patient::TEXT,
-    p.sexe,
-    p.age::INT
+    s.sexe,
+    s.age::INT
 FROM gold.stg_consultations_raw s
-LEFT JOIN operational.patient p ON p.id_patient = s.id_patient
 ORDER BY s.id_patient;
 
 INSERT INTO gold.dim_etablissement (finess, nom, id_geo)
