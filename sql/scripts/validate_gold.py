@@ -3,6 +3,7 @@ Validation qualite du slice consultations dans Gold.
 """
 
 import logging
+import os
 
 from utils import log_step, validate_table
 
@@ -22,6 +23,28 @@ def validate_gold() -> None:
             ("gold.dim_diagnostic", {"min_rows": 1}),
             ("gold.fait_consultation", {"min_rows": 1}),
         ]
+
+        enable_extended_facts = os.getenv("ENABLE_EXTENDED_FACTS", "false").lower() in {
+            "1",
+            "true",
+            "yes",
+            "on",
+        }
+
+        if enable_extended_facts:
+            required_tables.extend(
+                [
+                    ("gold.stg_geographie_raw", {"min_rows": 1}),
+                    ("gold.stg_deces_raw", {"min_rows": 1}),
+                    ("gold.stg_satisfaction_raw", {"min_rows": 1}),
+                    ("gold.stg_etablissements_raw", {"min_rows": 1}),
+                    ("gold.stg_professionnels_raw", {"min_rows": 1}),
+                    ("gold.dim_geographie", {"min_rows": 1}),
+                    ("gold.dim_professionnel", {"min_rows": 1}),
+                    ("gold.fait_deces", {"min_rows": 1}),
+                    ("gold.fait_satisfaction", {"min_rows": 1}),
+                ]
+            )
 
         for table_name, checks in required_tables:
             validate_table(table_name, checks)

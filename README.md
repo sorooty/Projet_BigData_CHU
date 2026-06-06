@@ -11,13 +11,13 @@ chu-pipeline/
 ├── airflow/
 │   ├── dags/                     # DAGs Airflow (orchestration)
 │   │   ├── chu_daily_pipeline.py # Main DAG
-│   │   └── utils.py              # Helpers (run_python_script, run_hive_query, etc)
+│   │   └── utils.py              # Helpers (run_python_script, run_sql_on_postgres, etc)
 │   └── ...
 ├── sql/
 │   ├── scripts/                  # Scripts exécutés par DAGs
 │   │   ├── extract/              # Extract Python (PostgreSQL, CSV)
-│   │   ├── transform/            # Transform HiveQL
-│   │   ├── load/                 # Load Python (Hive warehouse)
+│   │   ├── transform/            # Transform SQL PostgreSQL
+│   │   ├── load/                 # Load Python (staging PostgreSQL)
 │   │   └── validate_gold.py      # Data quality
 │   └── init/                     # Schema DDL (init DB)
 ├── docker/                       # Dockerfiles + docker-compose.yml
@@ -62,18 +62,40 @@ chu-pipeline/
 
 - `sql/scripts/extract/extract_ftp.py` reste en reserve si une source FTP apparait plus tard.
 - Pour le moment, le pipeline utilise seulement PostgreSQL et les CSV locaux de `data/raw/`.
+- Les traitements geographie, deces et satisfaction sont disponibles et activables via `ENABLE_EXTENDED_FACTS=true`.
 
 ## Architecture
 
 | Zone | Type | Contenu | Outil |
 |------|------|---------|-------|
-| **Bronze** | Files | CSV extraits, bruts | Parquet in `/data/bronze/` |
-| **Silver** | Files | Données nettoyées, normalisées | Parquet in `/data/silver/` |
-| **Gold** | Tables | Tables Hive analytiques | Hive in Hadoop |
+| **Bronze** | Files | CSV extraits, bruts | CSV in `/opt/airflow/data/bronze/` |
+| **Silver** | Files | Données nettoyées, normalisées | Zone optionnelle |
+| **Gold** | Tables | Tables analytiques | PostgreSQL (schema `gold`) |
+
+### Modele de constellation retenu
+
+- Le modele cible conserve les cles metier texte existantes:
+  - `dim_etablissement.finess` comme cle reference etablissement
+  - `dim_patient.id_patient` en texte
+  - `dim_professionnel.id_professionnel` en texte
+- Les tables de faits referencent ces cles metier, pas des surrogate keys entieres pour ces dimensions.
+
+### HiveQL et analytique
+
+- Le pipeline principal Airflow execute PostgreSQL uniquement.
+- HiveQL est positionne comme couche analytique complementaire pour gros volumes ou usages exploratoires.
+- Si active ensuite, il sera alimente depuis Gold PostgreSQL ou via export dedie.
+
+### Connexion PowerBI
+
+1. Source principale: PostgreSQL schema `gold`
+2. Utiliser des vues metier stables pour les rapports
+3. Mode recommande: Import pour commencer, puis DirectQuery sur vues ciblees si necessaire
+4. Rafraichissement apres execution DAG quotidienne
 
 **Orchestration:** Apache Airflow (daily @ 00:00 UTC)
 
-**Restitution:** PowerBI connecté à Hive (Gold)
+**Restitution:** PowerBI connecté à PostgreSQL (Gold)
 
 ## Documentation
 - (*WIP*)
