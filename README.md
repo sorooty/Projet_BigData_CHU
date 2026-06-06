@@ -55,9 +55,13 @@ chu-pipeline/
 - Les CSV sources a traiter doivent etre places dans `data/raw/` (local).
 - Dans le conteneur Airflow, ce dossier est monte en `/opt/airflow/data/raw`.
 - Le script `sql/scripts/extract/extract_csv.py` lit uniquement les fichiers `*.csv` presents directement dans ce dossier.
-- Le script `sql/scripts/extract/extract_ftp.py` peut alimenter automatiquement `data/raw` depuis FTP si `FTP_ENABLED=true`.
 - Les fichiers de `data/raw/` sont ignores par Git. Seul `data/raw/.gitkeep` est versionne pour conserver le dossier.
 - Le dump PostgreSQL source reste dans `project_data/BDD PostgreSQL/DATA2023` et sert a alimenter la base source `postgres`.
+
+### Perspectives
+
+- `sql/scripts/extract/extract_ftp.py` reste en reserve si une source FTP apparait plus tard.
+- Pour le moment, le pipeline utilise seulement PostgreSQL et les CSV locaux de `data/raw/`.
 
 ## Architecture
 
