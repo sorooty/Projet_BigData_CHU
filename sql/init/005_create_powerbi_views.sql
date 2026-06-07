@@ -1,4 +1,4 @@
--- Vues Gold pour connexion PowerBI.
+-- Vues Gold pour connexion Metabase.
 -- Import mode recommande: requetes aggregees, rafraichissement quotidien apres pipeline.
 -- DirectQuery possible sur ces vues mais deconseille en prod (volume).
 

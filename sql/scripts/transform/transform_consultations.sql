@@ -27,7 +27,7 @@ ORDER BY s.id_patient;
 
 INSERT INTO gold.dim_etablissement (finess, nom, id_geo)
 SELECT DISTINCT
-    s.id_etablissement::TEXT,
+    COALESCE(NULLIF(REGEXP_REPLACE(TRIM(s.id_etablissement::TEXT), '^0+', ''), ''), '0') AS finess,
     NULL::TEXT,
     NULL::INT
 FROM gold.stg_consultations_raw s
@@ -36,7 +36,7 @@ ORDER BY 1;
 INSERT INTO gold.dim_diagnostic (code_diag, libelle)
 SELECT DISTINCT
     COALESCE(NULLIF(TRIM(s.diagnostic), ''), 'UNKNOWN') AS code_diag,
-    NULL::TEXT
+    COALESCE(NULLIF(TRIM(s.diagnostic), ''), 'UNKNOWN') AS libelle
 FROM gold.stg_consultations_raw s
 ORDER BY 1;
 
@@ -52,7 +52,7 @@ INSERT INTO gold.fait_consultation (
 SELECT
     TO_CHAR(s.date_consultation::date, 'YYYYMMDD')::INT AS id_temps,
     s.id_patient::TEXT AS id_patient,
-    s.id_etablissement::TEXT AS finess,
+    COALESCE(NULLIF(REGEXP_REPLACE(TRIM(s.id_etablissement::TEXT), '^0+', ''), ''), '0') AS finess,
     NULL AS id_professionnel,
     COALESCE(NULLIF(TRIM(s.diagnostic), ''), 'UNKNOWN') AS code_diag,
     NULL AS duree_consultation,

@@ -28,10 +28,34 @@ def _find_column(col_map: dict[str, str], aliases: list[str]) -> str | None:
 
 
 def _find_source() -> Path:
-    candidates = sorted(RAW_DIR.glob("*etablissement*.csv")) + sorted(RAW_DIR.glob("*etablissements*.csv"))
+    candidates = (
+        sorted(RAW_DIR.glob("*etablissement*.csv"))
+        + sorted(RAW_DIR.glob("*etablissements*.csv"))
+        + sorted(BRONZE_DIR.glob("*etablissement*.csv"))
+        + sorted(BRONZE_DIR.glob("*etablissements*.csv"))
+    )
     if not candidates:
-        raise FileNotFoundError(f"Aucun CSV etablissements trouve dans {RAW_DIR}")
+        raise FileNotFoundError(f"Aucun CSV etablissements trouve dans {RAW_DIR} ou {BRONZE_DIR}")
     return candidates[0]
+
+
+def _normalize_finess(value: str | None) -> str | None:
+    if value is None:
+        return None
+    digits = "".join(ch for ch in value if ch.isdigit())
+    if not digits:
+        return None
+    normalized = digits.lstrip("0")
+    return normalized or "0"
+
+
+def _extract_region_from_postal(value: str | None) -> str | None:
+    if value is None:
+        return None
+    digits = "".join(ch for ch in value if ch.isdigit())
+    if len(digits) < 2:
+        return None
+    return digits[:2]
 
 
 def extract_etablissements() -> None:
@@ -43,17 +67,49 @@ def extract_etablissements() -> None:
         raise ValueError(f"Fichier etablissements vide: {source}")
 
     col_map = {_normalize_col(col): col for col in frame.columns}
-    finess_col = _find_column(col_map, ["finess", "id_etablissement", "etablissement"])
-    nom_col = _find_column(col_map, ["nom", "nom_etablissement", "raison_sociale"])
+    finess_col = _find_column(
+        col_map,
+        [
+            "finess",
+            "finess_site",
+            "finessetablissementjuridique",
+            "id_etablissement",
+            "etablissement",
+        ],
+    )
+    finess_alt_col = _find_column(
+        col_map,
+        [
+            "finess_site",
+            "finessetablissementjuridique",
+            "finess",
+        ],
+    )
+    nom_col = _find_column(
+        col_map,
+        [
+            "nom",
+            "nom_etablissement",
+            "raisonsocialesite",
+            "raison_sociale",
+            "enseignecommercialesite",
+        ],
+    )
     code_region_col = _find_column(col_map, ["code_region", "region", "region_code"])
+    code_postal_col = _find_column(col_map, ["code_postal", "codepostal"])
 
     rows: list[tuple[str, str, str]] = []
     for _, row in frame.iterrows():
-        finess = str(row[finess_col]).strip() if finess_col and pd.notna(row[finess_col]) else None
+        raw_finess = str(row[finess_col]).strip() if finess_col and pd.notna(row[finess_col]) else None
+        if (raw_finess is None or raw_finess == "") and finess_alt_col and pd.notna(row[finess_alt_col]):
+            raw_finess = str(row[finess_alt_col]).strip()
+        finess = _normalize_finess(raw_finess)
         if not finess:
             continue
         nom = str(row[nom_col]).strip() if nom_col and pd.notna(row[nom_col]) else None
         code_region = str(row[code_region_col]).strip() if code_region_col and pd.notna(row[code_region_col]) else None
+        if not code_region and code_postal_col and pd.notna(row[code_postal_col]):
+            code_region = _extract_region_from_postal(str(row[code_postal_col]).strip())
         rows.append((finess, nom or "", code_region or ""))
 
     if not rows:

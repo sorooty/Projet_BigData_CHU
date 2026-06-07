@@ -15,7 +15,7 @@ Bronze CSV (`/opt/airflow/data/bronze`)
 Load staging PostgreSQL (`gold.stg_*`)  
 Transform SQL PostgreSQL  
 Gold PostgreSQL (`gold.dim_*`, `gold.fait_*`)  
-PowerBI
+Metabase
 
 ## Orchestration Airflow
 
@@ -72,20 +72,20 @@ Positionnement retenu:
 2. HiveQL sera introduit comme couche analytique complémentaire si la volumétrie ou les besoins l'exigent.
 3. L'alimentation Hive se fera via export depuis Gold PostgreSQL ou pipeline dédié, sans casser le flux Airflow principal.
 
-## Stratégie PowerBI
+## Strategie Metabase
 
-Connexion recommandée:
+Connexion recommandee:
 
 1. Connecteur PostgreSQL sur la base `chu_data`
-2. Consommation de vues métier dans le schéma `gold` (ou `reporting`)
-3. Démarrage en mode Import
-4. Passage partiel en DirectQuery si besoin de quasi temps réel
+2. Consommation de vues metier dans le schema `gold` (`v_kpi_consultations`, `v_kpi_deces`, `v_kpi_satisfaction`, `v_kpi_hospitalisations`)
+3. Rafraichissement des questions apres execution du DAG
 
 Bonnes pratiques:
 
 - Stabiliser le contrat des vues SQL avant publication
-- Planifier le refresh après la fin du DAG
+- Planifier le refresh apres la fin du DAG
 - Limiter l'exposition aux tables techniques `stg_*`
+- Garder PowerBI en backup uniquement
 
 ## Docker et services
 

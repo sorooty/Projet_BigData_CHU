@@ -2,7 +2,7 @@
 
 Plateforme Big Data décisionnelle pour le contexte CHU.
 
-Objectif: orchestrer les pipelines ETL (Airflow), ingerer des sources heterogenes (PostgreSQL, CSV, FTP), transformer les donnees, et alimenter des rapports PowerBI.
+Objectif: orchestrer les pipelines ETL (Airflow), ingerer des sources heterogenes (PostgreSQL, CSV), transformer les donnees, et alimenter des tableaux de bord Metabase.
 
 ## Structure du projet
 
@@ -21,7 +21,7 @@ chu-pipeline/
 │   │   └── validate_gold.py      # Data quality
 │   └── init/                     # Schema DDL (init DB)
 ├── docker/                       # Dockerfiles + docker-compose.yml
-├── powerbi/                      # Models + rapports PowerBI
+├── metabase/                     # Requetes et assets Metabase
 ├── data/
 │   ├── raw/                      # Fichiers sources CSV locaux (non versionnes)
 │   ├── bronze/                   # Extractions brutes produites par les scripts
@@ -69,7 +69,7 @@ chu-pipeline/
 | Zone | Type | Contenu | Outil |
 |------|------|---------|-------|
 | **Bronze** | Files | CSV extraits, bruts | CSV in `/opt/airflow/data/bronze/` |
-| **Silver** | Files | Données nettoyées, normalisées | Zone optionnelle |
+| **Silver** | Files | Donnees nettoyees, normalisees | Zone optionnelle, non utilisee dans le DAG actuel |
 | **Gold** | Tables | Tables analytiques | PostgreSQL (schema `gold`) |
 
 ### Modele de constellation retenu
@@ -86,16 +86,16 @@ chu-pipeline/
 - HiveQL est positionne comme couche analytique complementaire pour gros volumes ou usages exploratoires.
 - Si active ensuite, il sera alimente depuis Gold PostgreSQL ou via export dedie.
 
-### Connexion PowerBI
+### Restitution Metabase
 
 1. Source principale: PostgreSQL schema `gold`
-2. Utiliser des vues metier stables pour les rapports
-3. Mode recommande: Import pour commencer, puis DirectQuery sur vues ciblees si necessaire
-4. Rafraichissement apres execution DAG quotidienne
+2. Utiliser les vues metier `gold.v_kpi_*`
+3. Rafraichissement des questions apres execution DAG quotidienne
+4. PowerBI reste optionnel en backup, hors flux principal
 
 **Orchestration:** Apache Airflow (daily @ 00:00 UTC)
 
-**Restitution:** PowerBI connecté à PostgreSQL (Gold)
+**Restitution:** Metabase connecte a PostgreSQL (Gold)
 
 ## Documentation
 - (*WIP*)
@@ -106,4 +106,4 @@ chu-pipeline/
 - [x] Phase 2: Docker (compose, Dockerfile, env)
 - [ ] Phase 3: DAGs complets + utils
 - [ ] Phase 4: Collègues écrivent scripts
-- [ ] Phase 5: PowerBI + validation
+- [ ] Phase 5: Metabase + validation

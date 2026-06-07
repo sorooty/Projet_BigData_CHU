@@ -84,11 +84,27 @@ def extract_csv() -> None:
         BRONZE_DIR.mkdir(parents=True, exist_ok=True)
 
         if not RAW_DIR.exists():
+            existing_bronze = sorted(BRONZE_DIR.glob("*_raw.csv"))
+            if existing_bronze:
+                logger.warning(
+                    "Dossier raw introuvable (%s), reutilisation des fichiers Bronze existants (%s)",
+                    RAW_DIR,
+                    len(existing_bronze),
+                )
+                return
             raise FileNotFoundError(f"Dossier source introuvable: {RAW_DIR}")
 
         # Traiter chaque CSV
         csv_files = sorted(RAW_DIR.glob("*.csv"))
         if not csv_files:
+            existing_bronze = sorted(BRONZE_DIR.glob("*_raw.csv"))
+            if existing_bronze:
+                logger.warning(
+                    "Aucun CSV trouve dans %s, reutilisation des fichiers Bronze existants (%s)",
+                    RAW_DIR,
+                    len(existing_bronze),
+                )
+                return
             raise FileNotFoundError(f"Aucun CSV trouve dans {RAW_DIR}")
 
         logger.info(f"Trouve {len(csv_files)} fichiers CSV")

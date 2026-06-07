@@ -46,9 +46,14 @@ def _to_float_or_none(value: object) -> float | None:
 
 
 def _find_satisfaction_files() -> list[Path]:
-    files = sorted(RAW_DIR.glob("*satisfaction*.csv")) + sorted(RAW_DIR.glob("*Satisfaction*.csv"))
+    files = (
+        sorted(RAW_DIR.glob("*satisfaction*.csv"))
+        + sorted(RAW_DIR.glob("*Satisfaction*.csv"))
+        + sorted(BRONZE_DIR.glob("*satisfaction*.csv"))
+        + sorted(BRONZE_DIR.glob("*Satisfaction*.csv"))
+    )
     if not files:
-        raise FileNotFoundError(f"Aucun CSV satisfaction trouve dans {RAW_DIR}")
+        raise FileNotFoundError(f"Aucun CSV satisfaction trouve dans {RAW_DIR} ou {BRONZE_DIR}")
     return files
 
 
@@ -70,7 +75,10 @@ def extract_satisfaction() -> None:
             continue
 
         col_map = {_normalize_col(col): col for col in frame.columns}
-        finess_col = _find_column(col_map, ["finess", "id_etablissement", "etablissement"])
+        finess_col = _find_column(
+            col_map,
+            ["finess", "finess_site", "id_etablissement", "etablissement", "finessetablissementjuridique"],
+        )
         region_col = _find_column(col_map, ["code_region", "region", "code_lieu_deces"])
         date_col = _find_column(col_map, ["date_satisfaction", "date", "annee"])
         score_col = _find_column(
@@ -80,6 +88,9 @@ def extract_satisfaction() -> None:
 
         for _, row in frame.iterrows():
             finess = _to_text_or_none(row[finess_col]) if finess_col else None
+            if finess:
+                digits = "".join(ch for ch in finess if ch.isdigit())
+                finess = digits.lstrip("0") or "0"
             code_region = _to_text_or_none(row[region_col]) if region_col else None
             if code_region and len(code_region) > 2:
                 code_region = "".join(ch for ch in code_region if ch.isdigit())[:2] or code_region[:2]

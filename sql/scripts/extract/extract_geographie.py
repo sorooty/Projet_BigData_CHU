@@ -37,7 +37,12 @@ def _extract_region(text: str | None) -> str | None:
 
 
 def _from_raw_geographie() -> list[tuple[str, str, str]]:
-    files = sorted(RAW_DIR.glob("*geograph*.csv")) + sorted(RAW_DIR.glob("*region*.csv"))
+    files = (
+        sorted(RAW_DIR.glob("*geograph*.csv"))
+        + sorted(RAW_DIR.glob("*region*.csv"))
+        + sorted(BRONZE_DIR.glob("*geograph*.csv"))
+        + sorted(BRONZE_DIR.glob("*region*.csv"))
+    )
     if not files:
         return []
 

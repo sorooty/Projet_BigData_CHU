@@ -40,6 +40,24 @@ SELECT
     n.pays
 FROM new_rows n;
 
+WITH source_rows AS (
+    SELECT DISTINCT
+        TRIM(code_region_src) AS code_region,
+        NULLIF(TRIM(libelle_region_src), '') AS libelle_region,
+        COALESCE(NULLIF(TRIM(pays_src), ''), 'FRANCE') AS pays
+    FROM gold.stg_geographie_raw
+    WHERE NULLIF(TRIM(code_region_src), '') IS NOT NULL
+),
+existing_rows AS (
+    SELECT
+        s.code_region,
+        s.libelle_region,
+        s.pays,
+        g.id_geo AS existing_id_geo
+    FROM source_rows s
+    LEFT JOIN gold.dim_geographie g
+        ON g.code_region = s.code_region
+)
 UPDATE gold.dim_geographie g
 SET
     libelle_region = e.libelle_region,

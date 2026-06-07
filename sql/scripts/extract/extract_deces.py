@@ -44,9 +44,14 @@ def _extract_region(code_lieu: str | None) -> str | None:
 
 
 def _find_deces_file() -> Path:
-    candidates = sorted(RAW_DIR.glob("*deces*.csv")) + sorted(RAW_DIR.glob("*DECES*.csv"))
+    candidates = (
+        sorted(RAW_DIR.glob("*deces*.csv"))
+        + sorted(RAW_DIR.glob("*DECES*.csv"))
+        + sorted(BRONZE_DIR.glob("*deces*.csv"))
+        + sorted(BRONZE_DIR.glob("*DECES*.csv"))
+    )
     if not candidates:
-        raise FileNotFoundError(f"Aucun CSV deces trouve dans {RAW_DIR}")
+        raise FileNotFoundError(f"Aucun CSV deces trouve dans {RAW_DIR} ou {BRONZE_DIR}")
     return candidates[0]
 
 
