@@ -3,6 +3,14 @@
 # Interface Airflow: http://localhost:8080 (airflow / airflow)
 # Seul Seyni modifie ce fichier.
 
+# Réseau interne avec IP statique pour postgres (évite les aléas du DNS Docker Desktop Windows)
+networks:
+  chu_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16
+
 x-airflow-common: &airflow-common
   build:
     context: .
@@ -18,11 +26,17 @@ x-airflow-common: &airflow-common
     AIRFLOW__CORE__LOAD_EXAMPLES: "false"
     AIRFLOW__API__AUTH_BACKENDS: airflow.api.auth.backend.basic_auth
     PYTHONPATH: /opt/airflow/dags:/opt/airflow/sql/scripts
+  # extra_hosts injecte l'IP statique de postgres dans /etc/hosts de chaque
+  # container Airflow → contourne la résolution DNS Docker Desktop instable
+  extra_hosts:
+    - "postgres:172.28.0.10"
   volumes:
     - ./airflow/dags:/opt/airflow/dags
     - ./sql:/opt/airflow/sql
     - ./data:/opt/airflow/data
     - airflow_logs:/opt/airflow/logs
+  networks:
+    - chu_net
   depends_on:
     postgres:
       condition: service_healthy
@@ -49,6 +63,9 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      chu_net:
+        ipv4_address: 172.28.0.10
 
   airflow-init:
     <<: *airflow-common
@@ -71,7 +88,8 @@ services:
     <<: *airflow-common
     container_name: chu_airflow_webserver
     restart: unless-stopped
-    command: webserver
+    # rm -f élimine le PID file obsolète laissé par un arrêt brutal (stale pid)
+    command: bash -c "rm -f /opt/airflow/airflow-webserver.pid /opt/airflow/airflow-webserver-monitor.pid && exec airflow webserver"
     ports:
       - "8080:8080"
     healthcheck:
@@ -108,6 +126,8 @@ services:
       MB_DB_FILE: /metabase-data/metabase.db
     volumes:
       - metabase_data:/metabase-data
+    networks:
+      - chu_net
 
 volumes:
   postgres_data:

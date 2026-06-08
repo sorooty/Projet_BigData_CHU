@@ -9,11 +9,14 @@ TRUNCATE TABLE
     gold.dim_diagnostic
 RESTART IDENTITY CASCADE;
 
-INSERT INTO gold.dim_temps (id_temps, date_complete, annee)
+INSERT INTO gold.dim_temps (id_temps, date_complete, annee, trimestre, mois, semaine)
 SELECT DISTINCT
     TO_CHAR(s.date_consultation::date, 'YYYYMMDD')::INT AS id_temps,
     s.date_consultation::date AS date_complete,
-    EXTRACT(YEAR FROM s.date_consultation::date)::INT AS annee
+    EXTRACT(YEAR    FROM s.date_consultation::date)::INT AS annee,
+    EXTRACT(QUARTER FROM s.date_consultation::date)::INT AS trimestre,
+    EXTRACT(MONTH   FROM s.date_consultation::date)::INT AS mois,
+    EXTRACT(WEEK    FROM s.date_consultation::date)::INT AS semaine
 FROM gold.stg_consultations_raw s
 ORDER BY 1;
 

@@ -28,6 +28,67 @@ def _find_column(col_map: dict[str, str], aliases: list[str]) -> str | None:
     return None
 
 
+# Mapping nom de région (anciens et nouveaux) -> code INSEE région (post-2016)
+_REGION_NAME_TO_CODE: dict[str, str] = {
+    # Nouvelles régions
+    "hautsdefrance": "32",
+    "normandie": "28",
+    "iledefrance": "11",
+    "centrevaldeloire": "24",
+    "grandest": "44",
+    "bourgognefranchecomte": "27",
+    "paysdelaloire": "52",
+    "bretagne": "53",
+    "nouvelleaquitaine": "75",
+    "auvergnerhonealpes": "84",
+    "occitanie": "76",
+    "provencealpescotedazur": "93",
+    "paca": "93",
+    "corse": "94",
+    # Anciennes régions (pré-2016)
+    "nordpasdecalais": "32",
+    "nordpasdecalaispicardie": "32",
+    "picardie": "32",
+    "hautenormandie": "28",
+    "bassenormandie": "28",
+    "centre": "24",
+    "champagneardenne": "44",
+    "alsace": "44",
+    "lorraine": "44",
+    "bourgogne": "27",
+    "franchecomte": "27",
+    "poitoucharentes": "75",
+    "limousin": "75",
+    "aquitaine": "75",
+    "auvergne": "84",
+    "rhonealpes": "84",
+    "languedocroussillon": "76",
+    "midipyrenees": "76",
+    # Outre-mer
+    "guadeloupe": "01",
+    "martinique": "02",
+    "guyane": "03",
+    "lareunion": "04",
+    "reunion": "04",
+    "mayotte": "06",
+}
+
+
+def _normalize_region_name(text: str) -> str:
+    """Retire accents, espaces, tirets, casse pour lookup uniforme."""
+    import unicodedata
+    nfkd = unicodedata.normalize("NFKD", text)
+    ascii_text = "".join(ch for ch in nfkd if not unicodedata.combining(ch))
+    return "".join(ch.lower() for ch in ascii_text if ch.isalpha())
+
+
+def _region_name_to_code(name: str | None) -> str | None:
+    if not name:
+        return None
+    key = _normalize_region_name(name)
+    return _REGION_NAME_TO_CODE.get(key)
+
+
 def _to_text_or_none(value: object) -> str | None:
     if value is None:
         return None
@@ -70,7 +131,12 @@ def extract_satisfaction() -> None:
 
     rows: list[tuple[str, str, str, float]] = []
     for source in source_files:
-        frame = pd.read_csv(source, dtype=str, sep=None, engine="python", on_bad_lines="skip")
+        frame = pd.read_csv(source, dtype=str, sep=None, engine="python", on_bad_lines="skip", encoding="latin-1")
+        # #region agent log
+        import json, time as _t
+        with open("/opt/airflow/data/debug-bddb4f.log", "a") as _f:
+            _f.write(json.dumps({"sessionId":"bddb4f","timestamp":int(_t.time()*1000),"location":"extract_satisfaction.py:read","message":"file read ok","data":{"file":str(source.name),"rows":len(frame)},"hypothesisId":"H-sat","runId":"post-fix"}) + "\n")
+        # #endregion
         if frame.empty:
             continue
 
@@ -79,7 +145,8 @@ def extract_satisfaction() -> None:
             col_map,
             ["finess", "finess_site", "id_etablissement", "etablissement", "finessetablissementjuridique"],
         )
-        region_col = _find_column(col_map, ["code_region", "region", "code_lieu_deces"])
+        region_code_col = _find_column(col_map, ["code_region", "region_code", "coderegion"])
+        region_name_col = _find_column(col_map, ["libelle_region", "libelleregion", "nom_region", "region"])
         date_col = _find_column(col_map, ["date_satisfaction", "date", "annee"])
         score_col = _find_column(
             col_map,
@@ -91,9 +158,15 @@ def extract_satisfaction() -> None:
             if finess:
                 digits = "".join(ch for ch in finess if ch.isdigit())
                 finess = digits.lstrip("0") or "0"
-            code_region = _to_text_or_none(row[region_col]) if region_col else None
-            if code_region and len(code_region) > 2:
-                code_region = "".join(ch for ch in code_region if ch.isdigit())[:2] or code_region[:2]
+
+            # Priorité : colonne code_region numérique, sinon libelle_region -> mapping
+            code_region = _to_text_or_none(row[region_code_col]) if region_code_col else None
+            if code_region and len(code_region) > 3:
+                # Valeur texte dans une colonne code_region -> traiter comme nom
+                code_region = _region_name_to_code(code_region)
+            elif not code_region and region_name_col:
+                region_name = _to_text_or_none(row[region_name_col])
+                code_region = _region_name_to_code(region_name)
 
             score = _to_float_or_none(row[score_col]) if score_col else None
             if finess is None or code_region is None or score is None:

@@ -3,9 +3,12 @@
 -- ============================================================
 
 CREATE TABLE IF NOT EXISTS gold.dim_temps (
-    id_temps     INT PRIMARY KEY,
+    id_temps      INT PRIMARY KEY,
     date_complete DATE NOT NULL,
-    annee        INT  NOT NULL
+    annee         INT  NOT NULL,
+    trimestre     INT  NOT NULL,
+    mois          INT  NOT NULL,
+    semaine       INT  NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS gold.dim_patient (
@@ -75,7 +78,6 @@ CREATE TABLE IF NOT EXISTS gold.fait_deces (
     id_fait_deces BIGSERIAL PRIMARY KEY,
     id_temps  INT  NOT NULL REFERENCES gold.dim_temps(id_temps),
     id_geo    INT  NOT NULL REFERENCES gold.dim_geographie(id_geo),
-    id_patient TEXT NOT NULL REFERENCES gold.dim_patient(id_patient),
     -- Mesures
     nb_deces  INT NOT NULL DEFAULT 1,
     loaded_at TIMESTAMPTZ NOT NULL DEFAULT NOW()

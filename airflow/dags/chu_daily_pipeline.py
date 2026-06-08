@@ -39,6 +39,7 @@ with DAG(
     description="Pipeline quotidien CHU: Extract, Load, Transform, Validate",
     schedule_interval="0 0 * * *",
     catchup=False,
+    max_active_runs=1,
     tags=["chu", "production"],
 ) as dag:
 

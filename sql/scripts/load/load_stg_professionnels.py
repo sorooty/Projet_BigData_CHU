@@ -18,7 +18,7 @@ PG_HOST = os.getenv("POSTGRES_HOST", "postgres")
 PG_PORT = os.getenv("POSTGRES_PORT", "5432")
 PG_DATABASE = os.getenv("POSTGRES_DB", "chu_data")
 PG_USER = os.getenv("POSTGRES_USER", "chu_admin")
-PG_PASSWORD = os.getenv("POSTGRES_PASSWORD", "chu_password_change_me11")
+PG_PASSWORD = os.getenv("POSTGRES_PASSWORD", "")
 
 STAGING_TABLE = "gold.stg_professionnels_raw"
 
