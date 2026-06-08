@@ -55,5 +55,19 @@ docker_volumes/
 *.tar.gz
 *.zip
 
-# documentation (for now)
-./docs/
+# LaTeX outputs (auxiliaires de compilation)
+*.aux
+*.lof
+*.log
+*.lot
+*.out
+*.toc
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+
+# IDE extensions
+*.vsix
+
+# Fichiers personnels de session
+recent_chat_history.md

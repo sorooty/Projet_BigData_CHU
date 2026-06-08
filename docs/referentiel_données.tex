@@ -1,0 +1,2413 @@
+\documentclass[12pt, a4paper]{report}
+
+% ─── Encodage & langue ───────────────────────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+
+% ─── Typographie & mise en page ──────────────────────────────────────────────
+\usepackage{geometry}
+\geometry{
+    a4paper,
+    top=2.5cm,
+    bottom=2.5cm,
+    left=2.8cm,
+    right=2.8cm,
+    headheight=15pt
+}
+\usepackage{microtype}
+\usepackage{setspace}
+\onehalfspacing
+
+% ─── Polices ─────────────────────────────────────────────────────────────────
+\usepackage{lmodern}
+\usepackage{titlesec}
+
+% ─── Couleurs ────────────────────────────────────────────────────────────────
+\usepackage[dvipsnames, table]{xcolor}
+\definecolor{chuBlue}{RGB}{0, 62, 126}
+\definecolor{chuLightBlue}{RGB}{0, 120, 215}
+\definecolor{chuGray}{RGB}{245, 245, 245}
+\definecolor{chuAccent}{RGB}{0, 168, 168}
+\definecolor{chuDark}{RGB}{30, 30, 30}
+\definecolor{bronze}{RGB}{205, 127, 50}
+\definecolor{silver}{RGB}{192, 192, 192}
+\definecolor{gold}{RGB}{255, 215, 0}
+
+% ─── En-têtes & pieds de page ────────────────────────────────────────────────
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textcolor{chuBlue}{\textbf{Référentiel de Données — CHU}}}
+\fancyhead[R]{\small\textcolor{chuGray!60!black}{Groupe 2 — CESI PGE A3}}
+\fancyfoot[C]{\textcolor{chuBlue}{\thepage}}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\headrule}{\color{chuBlue}\hrule width\headwidth height\headrulewidth}
+
+% ─── Titres de sections ──────────────────────────────────────────────────────
+\titleformat{\chapter}[block]
+  {\color{chuBlue}\LARGE\bfseries}
+  {\thechapter.}{0.8em}{}
+  [\color{chuLightBlue}\titlerule]
+\titleformat{\section}
+  {\color{chuBlue}\large\bfseries}
+  {\thesection}{0.8em}{}
+\titleformat{\subsection}
+  {\color{chuDark}\normalsize\bfseries}
+  {\thesubsection}{0.8em}{}
+\titlespacing*{\chapter}{0pt}{10pt}{20pt}
+\titlespacing*{\section}{0pt}{14pt}{6pt}
+\titlespacing*{\subsection}{0pt}{10pt}{4pt}
+
+% ─── Tables & figures ────────────────────────────────────────────────────────
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{caption}
+\captionsetup{
+    labelfont={bf, color=chuBlue},
+    textfont=small,
+    skip=6pt
+}
+
+% ─── Boîtes & encadrés ───────────────────────────────────────────────────────
+\usepackage{tcolorbox}
+\tcbuselibrary{skins, breakable, theorems}
+
+\newtcolorbox{infobox}[1][]{
+    colback=chuGray,
+    colframe=chuLightBlue,
+    fonttitle=\bfseries\small\color{chuBlue},
+    title=#1,
+    boxrule=0.5pt,
+    arc=4pt,
+    left=6pt, right=6pt, top=6pt, bottom=6pt,
+    breakable
+}
+
+\newtcolorbox{warningbox}[1][]{
+    colback=orange!8,
+    colframe=orange!70,
+    fonttitle=\bfseries\small\color{orange!80!black},
+    title=#1,
+    boxrule=0.5pt,
+    arc=4pt,
+    left=6pt, right=6pt, top=6pt, bottom=6pt,
+    breakable
+}
+
+\newtcolorbox{rgpdbox}[1][]{
+    colback=red!5,
+    colframe=red!60,
+    fonttitle=\bfseries\small\color{red!70!black},
+    title={#1},
+    boxrule=0.8pt,
+    arc=4pt,
+    left=6pt, right=6pt, top=6pt, bottom=6pt,
+    breakable
+}
+
+% ─── Code source ─────────────────────────────────────────────────────────────
+\usepackage{listings}
+\lstset{
+    basicstyle=\ttfamily\footnotesize,
+    backgroundcolor=\color{chuGray},
+    frame=single,
+    frameround=tttt,
+    rulecolor=\color{chuLightBlue!50},
+    keywordstyle=\color{chuBlue}\bfseries,
+    commentstyle=\color{gray}\itshape,
+    stringstyle=\color{chuAccent},
+    numberstyle=\tiny\color{gray},
+    numbers=left,
+    numbersep=8pt,
+    breaklines=true,
+    captionpos=b,
+    showstringspaces=false,
+    tabsize=2
+}
+\lstdefinestyle{sql}{language=SQL}
+\lstdefinestyle{python}{language=Python}
+
+% ─── Liens & PDF ─────────────────────────────────────────────────────────────
+\usepackage[
+    colorlinks=true,
+    linkcolor=chuBlue,
+    urlcolor=chuLightBlue,
+    citecolor=chuAccent,
+    pdftitle={Référentiel de Données — Projet CHU},
+    pdfauthor={Groupe 2 CESI PGE A3},
+    pdfsubject={Livrable 1 — Big Data},
+    pdfkeywords={Data Warehouse, Big Data, CHU, RGPD, Modélisation dimensionnelle}
+]{hyperref}
+
+% ─── Divers ──────────────────────────────────────────────────────────────────
+\usepackage{enumitem}
+\usepackage{tocbibind}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning, fit, backgrounds, decorations.pathreplacing}
+\usepackage{graphicx} % pour \includegraphics
+
+% ─── Colonnes tabularx personnalisées ────────────────────────────────────────
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\arraybackslash}p{#1}}
+
+% ─── Macros raccourcis tableaux ───────────────────────────────────────────────
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\dimtps}{{\small\textit{DIM\_TEMPS}}}
+\newcommand{\dimeta}{{\small\textit{DIM\_ETAB.}}}
+\newcommand{\diag}{{\small\textit{DIM\_DIAG.}}}
+\newcommand{\dimgeo}{{\small\textit{DIM\_GEO.}}}
+\newcommand{\dimpat}{{\small\textit{DIM\_PATIENT}}}
+
+% ─── Macro ligne de table de faits ───────────────────────────────────────────
+% Usage : \factrow{colonne}{type}{contrainte}{description}
+\newcommand{\factrow}[4]{%
+  \textbf{\texttt{#1}} & \texttt{#2} & \texttt{#3} & #4 \\%
+}
+
+% ─────────────────────────────────────────────────────────────────────────────
+% DOCUMENT
+% ─────────────────────────────────────────────────────────────────────────────
+\begin{document}
+
+% ═══════════════════════════════════════════════════════════════════
+% PAGE DE GARDE
+% ═══════════════════════════════════════════════════════════════════
+\begin{titlepage}
+    \pagecolor{chuBlue}
+    \color{white}
+    \begin{tikzpicture}[remember picture, overlay]
+        % Bande décorative en haut
+        \fill[chuAccent] (current page.north west) rectangle ([yshift=-1.2cm]current page.north east);
+        % Bande décorative en bas
+        \fill[chuLightBlue!60!white] (current page.south west) rectangle ([yshift=1.2cm]current page.south east);
+    \end{tikzpicture}
+    
+    \vspace*{4cm}
+    \begin{center}
+        {\fontsize{24}{28}\selectfont\textbf{Référentiel de Données}}\\[0.8cm]
+        {\fontsize{18}{22}\selectfont Projet Décisionnel CHU - Livrable 1}\\[2cm]
+        
+        \vspace{2cm}
+        {\fontsize{14}{16}\selectfont\textbf{CESI - École d'Ingénieurs}}\\[0.3cm]
+        {\large PGE A3 FISE - Bloc Stockage \& Big Data 2025/2026}\\[1.5cm]
+        
+        {\normalsize \textbf{Groupe 2} : Seyni, Omar, Abdoulaye, Thierno}
+    \end{center}
+\end{titlepage}
+\nopagecolor % Réinitialise la couleur de fond
+
+% ═══════════════════════════════════════════════════════════════════
+% RÉSUMÉ EXÉCUTIF
+% ═══════════════════════════════════════════════════════════════════
+\clearpage
+\thispagestyle{empty}
+\begin{center}
+    {\large\bfseries\color{chuBlue} Résumé exécutif}
+\end{center}
+\vspace{0.5cm}
+
+\begin{infobox}[Contexte]
+Le groupe CHU (Cloud Healthcare Unit) a pour mission de mettre en place un entrepôt de données décisionnel afin d'exploiter les volumes importants de données hétérogènes générés par ses systèmes de gestion des soins et ses systèmes FTP. Ce document constitue le \textbf{Livrable 1} du projet : le référentiel de données.
+\end{infobox}
+\vspace{0.8cm}
+
+Ce rapport décrit l'ensemble des choix de conception retenus pour la solution Big Data du groupe CHU, à savoir :
+\begin{itemize}[leftmargin=1.5cm, label=\textcolor{chuBlue}{\textbullet}]
+    \item L'architecture technique de l'entrepôt de données (pattern médaillon) et la justification des choix de la stack technologique (Docker, PostgreSQL, Python).
+    \item Le modèle dimensionnel en constellation modélisant les activités cliniques et administratives.
+    \item Les pipelines ETL d'alimentation du schéma décisionnel.
+    \item Les mesures de conformité RGPD appliquées aux données de santé.
+\end{itemize}
+
+\vspace{0.5cm}
+\begin{rgpdbox}[Attention Conformité RGPD - Article 9]
+Les données traitées dans ce projet sont des \textbf{données de santé}. La pseudonymisation des identifiants patients (hachage SHA-256) est obligatoire avant tout chargement dans l'entrepôt. Cette contrainte architecturale régit l'intégralité des flux présentés.
+\end{rgpdbox}
+
+% ═══════════════════════════════════════════════════════════════════
+% TABLE DES MATIÈRES
+% ═══════════════════════════════════════════════════════════════════
+\clearpage
+\tableofcontents
+\clearpage
+
+% ═══════════════════════════════════════════════════════════════════
+% CHAPITRE 1 — INTRODUCTION GÉNÉRALE
+% ═══════════════════════════════════════════════════════════════════
+\chapter{Introduction générale}
+
+\section{Contexte du projet CHU}
+La transformation numérique du secteur hospitalier constitue l'un des enjeux majeurs de la décennie, tant sur le plan organisationnel que technologique. Les établissements de santé produisent quotidiennement des volumes considérables de données hétérogènes, issues de systèmes d'information cliniques, administratifs et logistiques souvent cloisonnés. Cette fragmentation des données représente un frein à la prise de décision éclairée et à l'optimisation des parcours de soins.
+
+Le présent projet s'inscrit dans le cadre d'une initiative de valorisation des données d'un groupe hospitalier universitaire (CHU). L'objectif est de concevoir un système d'information décisionnel à partir de données médico-administratives réelles ou simulées, en mobilisant des outils adaptés au traitement analytique de données massives. Ce projet est conduit dans un cadre pédagogique de première année de cycle ingénieur informatique au sein de l'école CESI, et constitue le premier livrable d'un projet décisionnel structuré en trois phases successives.
+
+\section{Objectifs du système décisionnel Big Data}
+Le système décisionnel conçu dans le cadre de ce projet vise à répondre à des besoins analytiques précis, formulés par des profils décisionnels tels que les directeurs d'établissements, les médecins coordinateurs et les responsables qualité. 
+
+Ces besoins se déclinent en huit indicateurs clés, constituant le périmètre fonctionnel du système :
+
+\begin{table}[H]
+    \centering
+    \begin{tabularx}{\textwidth}{@{}l l X@{}}
+    \toprule
+    \rowcolor{chuBlue!15}
+    \textbf{N\textsuperscript{o}} & \textbf{Domaine} & \textbf{Indicateur} \\
+    \midrule
+    1 & Consultations & Nombre de consultations par période et par établissement \\
+    \rowcolor{chuGray}
+    2 & Consultations & Répartition des consultations par spécialité médicale \\
+    3 & Hospitalisations & Durée moyenne de séjour par diagnostic et par établissement \\
+    \rowcolor{chuGray}
+    4 & Hospitalisations & Taux d'occupation des lits par établissement et par période \\
+    5 & Décès & Taux de mortalité par région et par pathologie \\
+    \rowcolor{chuGray}
+    6 & Décès & Evolution temporelle des décès par cause et par territoire \\
+    7 & Satisfaction & Score moyen de satisfaction par établissement \\
+    \rowcolor{chuGray}
+    8 & Satisfaction & Distribution des notes de satisfaction par dimension évaluée \\
+    \bottomrule
+    \end{tabularx}
+    \caption{Indicateurs décisionnels du système CHU}
+\end{table}
+
+\section{Périmètre fonctionnel et données disponibles}
+Les sources de données mises à disposition dans le cadre de ce projet sont les suivantes :
+
+\begin{table}[H]
+    \centering
+    \begin{tabularx}{\textwidth}{@{}l l l X@{}}
+    \toprule
+    \rowcolor{chuBlue!15}
+    \textbf{Source} & \textbf{Type} & \textbf{Format} & \textbf{Contenu} \\
+    \midrule
+    PostgreSQL & Structuré & BDD & Données médico-administratives des patients, consultations, etc. \\
+    \rowcolor{chuGray}
+    Etablissements & Structuré & CSV (;) & Référentiel national des établissements (FINESS). \\
+    Satisfaction & Semi-structuré & Fichiers plats & Notes et verbatims de satisfaction patient (2020). \\
+    \rowcolor{chuGray}
+    Décès & Semi-structuré & Fichiers plats & Répertoire national des décès, agrégé par région (2019). \\
+    \bottomrule
+    \end{tabularx}
+    \caption{Sources de données disponibles}
+\end{table}
+
+\section{Positionnement du Livrable 1 dans le projet global}
+Ce projet est structuré en trois livrables successifs. Ce premier document, le \textbf{Livrable 1}, pose les fondations conceptuelles et techniques. Il formalise le schéma en constellation, documente les flux ETL, justifie l'architecture technique retenue et statue sur la conformité RGPD. Les livrables suivants s'appuieront sur ce socle pour l'implémentation physique, l'optimisation (Livrable 2) et la restitution visuelle (Livrable 3).
+
+
+
+% ═══════════════════════════════════════════════════════════════════
+% CHAPITRE 2 — ARCHITECTURE DE L'ENTREPÔT DE DONNÉES (MODÈLE 3 ZONES)
+% ═══════════════════════════════════════════════════════════════════
+\chapter{Architecture de l'entrepôt de données (modèle 3 zones)}
+
+Ce chapitre décrit l'architecture technique retenue pour le projet décisionnel du CHU. Il relie les principes théoriques de la modélisation décisionnelle aux choix concrets de stack logicielle, de conteneurisation et d'orchestration des traitements.
+
+% ==================================================================
+% 2.1 PRINCIPES FONDAMENTAUX ET CHOIX STRATÉGIQUES
+% ==================================================================
+\section{Principes fondamentaux et choix stratégiques}
+
+\subsection{Alignement théorique}
+
+\subsubsection{Implémentation du pattern de Ralph Kimball}
+
+Le modèle de Ralph Kimball sert de fondation à la partie décisionnelle de l'entrepôt. Il repose sur un schéma en étoile constitué d'une table de faits centrale qui porte les mesures quantitatives, entourée de dimensions dénormalisées décrivant le contexte des événements. 
+
+Dans le cas du CHU, les principes suivants sont appliqués :
+
+\begin{itemize}[label=\textcolor{chuBlue}{\textbullet}]
+  \item Une table de faits centrale, \texttt{FACT\_ACTIVITE\_MEDICALE}, qui regroupe les mesures liées aux consultations, hospitalisations, décès et satisfaction.
+  \item Des dimensions partagées (temps, patient, établissement, diagnostic, professionnel) qui assurent la cohérence des analyses croisées.
+  \item L'utilisation de clés de substitution et de mécanismes SCD de type 2 pour historiser les changements structurants sans complexifier les requêtes.
+\end{itemize}
+
+\begin{figure}[H]
+  \centering
+  \resizebox{0.9\textwidth}{!}{%
+    \begin{tikzpicture}[
+        dim/.style={rectangle, rounded corners=4pt, draw=chuBlue, fill=chuBlue!5, minimum width=2.9cm, minimum height=0.9cm, font=\footnotesize\bfseries, align=center},
+        fact/.style={rectangle, rounded corners=4pt, draw=chuAccent, fill=chuAccent!10, minimum width=4.2cm, minimum height=1.2cm, font=\footnotesize\bfseries, align=center},
+        arrow/.style={-stealth, thick, color=chuLightBlue}
+      ]
+
+      \node[fact] (fact) {FACT\_ACTIVITE\_\\MEDICALE};
+
+      \node[dim, above=1.3cm of fact] (temps) {DIM\_TEMPS};
+      \node[dim, below=1.3cm of fact] (patient) {DIM\_PATIENT};
+      \node[dim, left=2.3cm of fact] (etab) {DIM\_ETABLISSEMENT};
+      \node[dim, right=2.3cm of fact] (diag) {DIM\_DIAGNOSTIC};
+      \node[dim, below right=1.0cm and 1.8cm of fact] (prof) {DIM\_PROFESSIONNEL};
+
+      \draw[arrow] (temps) -- (fact);
+      \draw[arrow] (patient) -- (fact);
+      \draw[arrow] (etab) -- (fact);
+      \draw[arrow] (diag) -- (fact);
+      \draw[arrow] (prof) -- (fact);
+
+    \end{tikzpicture}%
+  }
+  \caption{Principe du schéma en étoile pour l’activité médicale du CHU}
+\end{figure}
+
+Cette vue conceptuelle est détaillée au chapitre 3 avec la déclinaison en constellation et les différentes tables de faits spécialisées.
+
+\subsubsection{Application industrielle moderne : architecture en médaillon}
+
+L'architecture en médaillon organise le cycle de vie de la donnée en trois zones successives. Elle complète le modèle de Kimball en structurant les étapes d'ingestion, d'intégration et d'exposition analytique.
+
+\begin{itemize}[label=\textcolor{chuBlue}{\textbullet}]
+  \item Zone Bronze : ingestion brute, stockage immuable et horodaté des sources.
+  \item Zone Silver : intégration, nettoyage, normalisation des référentiels et pseudonymisation.
+  \item Zone Gold : stockage analytique et modèle décisionnel prêt à être interrogé par la couche BI.
+\end{itemize}
+
+\begin{figure}[H]
+  \centering
+  \resizebox{0.9\textwidth}{!}{%
+    \begin{tikzpicture}[
+        zone/.style={rectangle, rounded corners=6pt, minimum width=9cm, minimum height=1.4cm, draw=#1, fill=#1!8, thick, align=left, inner sep=8pt},
+        arrow/.style={-stealth, thick, color=chuLightBlue}
+      ]
+
+      \node[zone=bronze] (bronze) {
+        \textbf{ZONE BRONZE} \hfill \textit{Ingestion brute}\\
+        \footnotesize Dumps PostgreSQL, CSV FINESS, fichiers plats satisfaction et décès
+      };
+
+      \node[zone=silver, below=0.9cm of bronze] (silver) {
+        \textbf{ZONE SILVER} \hfill \textit{Conformité et intégration}\\
+        \footnotesize Nettoyage, normalisation, contrôles de qualité, pseudonymisation
+      };
+
+      \node[zone=gold, below=0.9cm of silver] (gold) {
+        \textbf{ZONE GOLD} \hfill \textit{Exposition analytique}\\
+        \footnotesize Schéma \texttt{datawarehouse}, tables de faits et dimensions, accès Metabase
+      };
+
+      \draw[arrow] (bronze.south) -- (silver.north);
+      \draw[arrow] (silver.south) -- (gold.north);
+
+    \end{tikzpicture}%
+  }
+  \caption{Architecture en médaillon Bronze, Silver, Gold pour le CHU}
+\end{figure}
+
+\subsection{Étude comparative et diagnostic de l'infrastructure}
+
+\subsubsection{Analyse de la stack VM initiale}
+
+La stack initialement envisagée reposait sur une machine virtuelle unique embarquant Hadoop, HDFS, Hive, Talend Open Studio et un outil de restitution. Cette approche souffrait de plusieurs limites dans le contexte du projet :
+
+\begin{itemize}[label=\textcolor{chuBlue}{\textbullet}]
+  \item Empilement de services lourds sur une seule VM, entraînant une consommation de RAM statique élevée.
+  \item Latence d'exécution significative des traitements MapReduce en environnement local pour une volumétrie qui reste modérée.
+  \item Courbe d'apprentissage importante pour des outils dont l'usage ne serait pas justifié à long terme sur un périmètre régional.
+\end{itemize}
+
+%  Ajouter un schéma / image de l'architechture 
+\begin{figure}[H]
+    \centering
+    \resizebox{0.95\textwidth}{!}{%
+    \begin{tikzpicture}[
+        node distance=2cm and 2.5cm,
+        vmbox/.style={rectangle, rounded corners=8pt, draw=chuBlue, fill=chuBlue!5, thick, minimum width=5cm, minimum height=6.5cm, align=center},
+        component/.style={rectangle, rounded corners=4pt, draw=chuBlue!80, fill=white, minimum width=4cm, minimum height=0.8cm, align=center, font=\small\bfseries, text=chuDark},
+        limitation/.style={rectangle, rounded corners=4pt, draw=orange!80, fill=orange!10, thick, minimum width=6.5cm, minimum height=1.3cm, align=left, font=\footnotesize, text=chuDark, text width=6cm},
+        arrow/.style={->, >=stealth, thick, color=orange!80},
+        icon/.style={circle, draw=orange!80, fill=orange!20, font=\bfseries, text=orange!80!black, minimum size=0.6cm, inner sep=0}
+    ]
+
+    % Boîte englobant la Machine Virtuelle
+    \node[vmbox] (vm) {};
+    \node[anchor=north, font=\bfseries\color{chuBlue}, yshift=-0.3cm] at (vm.north) {Machine Virtuelle Unique};
+    
+    % Composants internes de la VM
+    \node[component, below=1cm of vm.north] (c1) {Talend Open Studio};
+    \node[component, below=0.3cm of c1] (c2) {Hive};
+    \node[component, below=0.3cm of c2] (c3) {Hadoop / HDFS};
+    \node[component, below=0.3cm of c3] (c4) {Outil de restitution};
+    
+    % Limites identifiées
+    \node[limitation, right=2.5cm of c1, yshift=0.2cm] (lim1) {\textbf{RAM statique élevée}\\Empilement de services lourds sur un seul environnement d'exécution.};
+    
+    \node[limitation, right=2.5cm of c2, yshift=-0.4cm] (lim2) {\textbf{Lourdeur MapReduce}\\Latence significative inadaptée à une volumétrie modérée.};
+    
+    \node[limitation, right=2.5cm of c4, yshift=0.3cm] (lim3) {\textbf{Courbe d'apprentissage}\\Outils surdimensionnés non justifiés pour un périmètre régional.};
+
+    % Icônes d'alerte pour chaque limite
+    \node[icon, left=0.2cm of lim1] (i1) {!};
+    \node[icon, left=0.2cm of lim2] (i2) {!};
+    \node[icon, left=0.2cm of lim3] (i3) {!};
+
+    % Flèches de liaison entre la VM et les limites
+    \draw[arrow] (vm.east |- i1) -- (i1);
+    \draw[arrow] (vm.east |- i2) -- (i2);
+    \draw[arrow] (vm.east |- i3) -- (i3);
+
+    \end{tikzpicture}%
+    }
+    \caption{Diagnostic et limites de l'architecture basée sur une Machine Virtuelle unique}
+\end{figure}
+
+
+\subsubsection{Justification de la stack Docker, Python, PostgreSQL}
+
+La stack retenue repose sur Docker, Python et PostgreSQL, complétés par Metabase pour la restitution. Ce choix est motivé par les points suivants : 
+
+\begin{itemize}[label=\textcolor{chuBlue}{\textbullet}]
+  \item Conteneurs plus légers qu'une VM monolithique, avec une consommation en ressources largement inférieure pour une même charge de travail.
+  \item Flexibilité des pipelines Python (pandas, SQLAlchemy) pour intégrer des données structurées et semi-structurées sans dépendre d'un outil graphique comme Talend.
+  \item Déploiement reproductible via Infrastructure as Code grâce au fichier \texttt{docker-compose.yml}.
+  \item PostgreSQL utilisé à la fois comme base opérationnelle répliquée et comme entrepôt décisionnel, avec deux schémas séparés.
+\end{itemize}
+
+\subsection{Scénarios d'organisation des données étudiés}
+
+Trois scénarios d'architecture ont été comparés avant de retenir le modèle 3 zones.
+
+\begin{itemize}[label=\textcolor{chuBlue}{\textbullet}]
+  \item Data Lake pur : très flexible mais sans modèle décisionnel structuré, exigeant un écosystème Hadoop complet pour des volumes qui ne le justifient pas.
+  \item Data Warehouse classique unique : simple mais peu adapté à l'ingestion de fichiers plats hétérogènes et à la traçabilité RGPD des transformations.
+  \item Architecture hybride en médaillon : équilibre entre souplesse d'ingestion en Bronze, qualité et conformité en Silver, et performance analytique en Gold.
+\end{itemize}
+
+\begin{infobox}[Choix stratégique]
+Le scénario hybride en médaillon a été retenu car il permet de gérer proprement l'hétérogénéité des sources, de tracer les transformations et de préserver un modèle décisionnel robuste, sans surdimensionner l'infrastructure.
+\end{infobox}
+
+% ==================================================================
+% 2.2 DESCRIPTION DES COMPOSANTS TECHNIQUES CONTENEURISÉS
+% ==================================================================
+\section{Description des composants techniques conteneurisés}
+
+L'architecture technique du projet est intégralement conteneurisée. Chaque zone fonctionnelle est associée à un ou plusieurs conteneurs, interconnectés via des réseaux Docker distincts.
+
+\subsection{Zone Bronze : stockage brut des sources}
+
+La zone Bronze se compose des volumes et services suivants :
+
+\begin{itemize}[label=\textcolor{chuBlue}{\textbullet}]
+  \item Un conteneur PostgreSQL exposant le schéma \texttt{operational}, qui réplique la base de soins du SI hospitalier.
+  \item Des volumes locaux montés pour stocker les dumps PostgreSQL, les fichiers CSV FINESS et les flux plats de satisfaction et de décès.
+  \item Un réseau Docker interne réservé à la Bronze, non accessible directement depuis la couche de restitution.
+\end{itemize}
+
+Cette zone ne réalise aucune transformation. Elle garantit la conservation des sources brutes et la possibilité de rejouer les flux au besoin.
+
+\subsection{Zone Silver : traitement, nettoyage et orchestration}
+
+La zone Silver est le coeur des transformations ETL :
+
+\begin{itemize}[label=\textcolor{chuBlue}{\textbullet}]
+  \item Un conteneur d'exécution des scripts Python qui s'appuie sur \texttt{pandas} et \texttt{SQLAlchemy} pour charger les données de Bronze, appliquer les règles métier et pousser les résultats vers Gold.
+  \item Un conteneur Apache Airflow (optionnel mais prévu dans l'architecture) chargé d'orchestrer les pipelines sous forme de DAGs, de planifier les exécutions et de tracer les dépendances entre tâches.
+  \item Un réseau Docker Silver qui relie ces conteneurs aux volumes de travail intermédiaires et à la base PostgreSQL.
+\end{itemize}
+
+Les principes détaillés de développement des scripts ETL sont présentés au chapitre 4.
+
+\subsection{Zone Gold : stockage analytique (OLAP)}
+
+La zone Gold est portée par un schéma dédié au sein de la même instance PostgreSQL :
+
+\begin{itemize}[label=\textcolor{chuBlue}{\textbullet}]
+  \item Schéma \texttt{datawarehouse} pour les tables de faits et de dimensions du modèle en constellation.
+  \item Index adaptés aux usages analytiques, et séparation claire des droits d'accès par rapport au schéma \texttt{operational}.
+\end{itemize}
+
+Ce schéma est la seule zone de la base visible depuis l'outil de BI.
+
+\subsection{Couche restitution (exposition)}
+
+La couche de restitution repose sur Metabase :
+
+\begin{itemize}[label=\textcolor{chuBlue}{\textbullet}]
+  \item Un conteneur Metabase connecté en lecture seule au schéma \texttt{datawarehouse}.
+  \item Aucun accès au schéma \texttt{operational} ni aux volumes Bronze, conformément aux exigences de cloisonnement et de confidentialité.
+\end{itemize}
+
+Metabase permet aux utilisateurs métier d'explorer les données, de construire des requêtes et de composer des tableaux de bord sans exposer les données sensibles.
+
+% ==================================================================
+% 2.3 FLUX DE DONNÉES ET CINÉMATIQUE DES TRAITEMENTS
+% ==================================================================
+\section{Flux de données et cinématique des traitements}
+
+\subsection{Enchaînement des étapes d'alimentation}
+
+Le flux de bout en bout se déroule selon la séquence suivante :
+
+\begin{enumerate}
+  \item Ingestion des sources brutes dans les volumes Docker et dans le schéma \texttt{operational} (zone Bronze).
+  \item Exécution des scripts Python orchestrés par Airflow pour le nettoyage, l'enrichissement et la pseudonymisation (zone Silver).
+  \item Chargement des tables de faits et de dimensions dans le schéma \texttt{datawarehouse} (zone Gold).
+  \item Interrogation du modèle décisionnel par Metabase pour produire des tableaux de bord et des rapports.
+\end{enumerate}
+
+\begin{figure}[H]
+  \centering
+  \resizebox{0.95\textwidth}{!}{%
+    \begin{tikzpicture}[
+        comp/.style={rectangle, rounded corners=4pt, draw=chuBlue, fill=chuBlue!5, minimum width=3.0cm, minimum height=0.9cm, font=\footnotesize\bfseries, align=center},
+        arrow/.style={-stealth, thick, color=chuLightBlue}
+      ]
+
+      \node[comp] (sources) {Sources brutes\\Dump PG, CSV, FTP};
+      \node[comp, right=2.4cm of sources] (bronze) {Zone Bronze\\Volumes Docker};
+      \node[comp, right=2.4cm of bronze] (silver) {Zone Silver\\ETL Python + Airflow};
+      \node[comp, right=2.4cm of silver] (gold) {Zone Gold\\Schéma DWH};
+      \node[comp, right=2.4cm of gold] (meta) {Metabase\\Tableaux de bord};
+
+      \draw[arrow] (sources) -- (bronze);
+      \draw[arrow] (bronze) -- (silver);
+      \draw[arrow] (silver) -- (gold);
+      \draw[arrow] (gold) -- (meta);
+
+    \end{tikzpicture}%
+  }
+  \caption{Parcours de la donnée de la source jusqu’à la restitution}
+\end{figure}
+
+\subsection{Stratégie d'actualisation et points de contrôle}
+
+La stratégie d'actualisation combine rechargements batch réguliers et contrôles systématiques :
+
+\begin{itemize}[label=\textcolor{chuBlue}{\textbullet}]
+  \item Une fréquence d'exécution (quotidienne ou hebdomadaire selon les flux) est définie dans Airflow pour chaque DAG.
+  \item Les jobs vérifient les volumes traités et la cohérence des clés avant de valider le chargement en Gold.
+  \item Les anomalies (valeurs hors plage, référentiels inconnus, échecs de pseudonymisation) sont journalisées pour correction.
+\end{itemize}
+
+Des points de contrôle sont positionnés à la fin de chaque zone afin de garantir que seules des données conformes et complètes puissent alimenter la zone suivante.
+
+% ==================================================================
+% 2.4 SCHÉMA D'ARCHITECTURE TECHNIQUE
+% ==================================================================
+\section{Schéma d'architecture technique}
+
+Les figures suivantes synthétisent l'ensemble des conteneurs, réseaux et flux de données de l'architecture Docker du projet.
+
+\begin{figure}[H]
+  \centering
+  \resizebox{\textwidth}{!}{%
+    \begin{tikzpicture}[
+        node distance=0.8cm and 2.5cm,
+        db/.style={cylinder, shape border rotate=90, aspect=0.2, draw=#1, thick, fill=#1!8, minimum width=3.4cm, minimum height=1.4cm, font=\footnotesize\bfseries, align=center},
+        box/.style={rectangle, rounded corners=4pt, draw=#1, thick, fill=#1!5, minimum width=3.4cm, minimum height=1.1cm, font=\footnotesize\bfseries, align=center},
+        net/.style={rectangle, dashed, draw=chuGray!70, rounded corners=8pt, inner sep=16pt},
+        arrow/.style={-stealth, ultra thick, color=chuLightBlue}
+      ]
+
+      % --- ZONE BRONZE ---
+      \node[db=bronze] (pgop) {PostgreSQL\\schéma operational};
+      \node[box=bronze, below=of pgop] (vol) {Volumes dumps\\et fichiers bruts};
+      
+      % --- ZONE SILVER ---
+      \node[box=chuAccent, right=2.8cm of pgop] (etl) {Conteneur ETL\\Python (Pandas)};
+      \node[box=chuAccent, below=of etl] (air) {Apache Airflow\\(orchestrateur)};
+      
+      % --- ZONE GOLD ---
+      \node[db=gold, right=2.8cm of etl] (pgdwh) {PostgreSQL\\schéma datawarehouse};
+      \node[box=chuBlue, below=of pgdwh] (meta) {Metabase\\Couche BI};
+
+      % --- DESSIN DES RÉSEAUX ISOLÉS (DOCKER NETWORKS) ---
+      \node[net, fit=(pgop) (vol), label={[font=\small\bfseries\color{chuDark}]above:Réseau Bronze}] (net_bronze) {};
+      \node[net, fit=(etl) (air), label={[font=\small\bfseries\color{chuDark}]above:Réseau Silver}] (net_silver) {};
+      \node[net, fit=(pgdwh) (meta), label={[font=\small\bfseries\color{chuDark}]above:Réseau Gold}] (net_gold) {};
+
+      % --- FLUX DE DONNÉES INTER-CONTENEURS ---
+      \draw[arrow] (pgop.east) -- node[above, font=\tiny\bfseries, text=chuBlue] {Extraction} (etl.west);
+      \draw[arrow] (vol.east) -- node[below, font=\tiny\bfseries, text=chuBlue] {Ingestion} (etl.west);
+      
+      \draw[arrow] (etl.east) -- node[above, font=\tiny\bfseries, text=chuBlue] {Chargement Gold} (pgdwh.west);
+      \draw[arrow] (air.east) -- node[below, font=\tiny\bfseries, text=chuDark] {Planification} (meta.west);
+      
+      \draw[arrow] (pgdwh.south) -- node[right, font=\tiny\bfseries, text=chuBlue] {Requêtes OLAP} (meta.north);
+
+    \end{tikzpicture}%
+  }
+  \caption{Architecture réseau isolée et cinématique des conteneurs Docker CHU}
+\end{figure}
+
+La légende adoptée est la suivante :
+
+\begin{itemize}[label=\textcolor{chuBlue}{\textbullet}]
+  \item Cylindres tridimensionnels : conteneurs de stockage de données relationnelles et décisionnelles (schémas PostgreSQL).
+  \item Encadrés pleins : conteneurs de traitement applicatif, d'orchestration et de restitution visuelle (flux Python, Airflow, Metabase).
+  \item Encadrés pointillés : réseaux virtuels isolés au sein du moteur Docker (briques Bronze, Silver, Gold).
+  \item Flèches directionnelles : flux de transfert logiques et cinématique des flux de données.
+\end{itemize}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1\linewidth]{imgs/Archi_Docker_Python.png}
+    \caption{Architecture résumée}
+    \label{fig:placeholder}
+\end{figure}
+
+
+% ==================================================================
+% 2.5 SYNTHÈSE DE L'ARCHITECTURE RETENUE
+% ==================================================================
+\section{Synthèse de l'architecture retenue}
+
+\subsection{Forces, limites et scalabilité de la solution}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{@{}X X@{}}
+\toprule
+\rowcolor{chuBlue!15}
+\textbf{Forces} & \textbf{Limites} \\
+\midrule
+Stack open source légère et standardisée (Docker, Python, PostgreSQL, Metabase). &
+Volumétrie supportée limitée par la capacité mémoire des conteneurs et de pandas. \\
+\rowcolor{chuGray}
+Séparation nette des zones Bronze, Silver, Gold et cloisonnement réseau. &
+Architecture orientée batch, sans traitement temps réel strict. \\
+Traçabilité fine des transformations et alignement avec les exigences RGPD. &
+Montée en charge au delà de certains volumes nécessitant une évolution vers Spark. \\
+\bottomrule
+\end{tabularx}
+\caption{Forces et limites de l'architecture actuelle}
+\end{table}
+
+L'architecture est suffisante pour un périmètre régional ou interrégional, avec des volumes de données compatibles avec une exécution quotidienne des traitements batch.
+
+\subsection{Évolutivité de l’architecture}
+
+L’architecture a été pensée pour rester évolutive :
+
+\begin{itemize}[leftmargin=1.2cm, label=\textcolor{chuBlue}{\textbullet}]
+    \item \textbf{Portabilité du code :} Les scripts ETL sont structurés de manière à pouvoir être portés vers PySpark sans modifier la structure globale des conteneurs.
+    \item \textbf{Pérennité du réseau :} Les réseaux Docker et le découpage des zones restent valides en cas de remplacement du moteur de calcul au sein de la Silver.
+    \item \textbf{Stabilité du modèle :} Le modèle décisionnel en Gold demeure inchangé, même si la technologie utilisée pour alimenter les tables de faits et de dimensions évolue.
+\end{itemize}
+
+En cas d’augmentation massive de la volumétrie, une transition vers une exécution distribuée (Spark) pourra être opérée de manière progressive, en conservant la même organisation en trois zones et la même interface BI côté utilisateurs.
+
+\begin{figure}[H]
+  \centering
+  \resizebox{\textwidth}{!}{%
+    \begin{tikzpicture}[
+        node distance=1.5cm and 2.0cm,
+        box/.style={rectangle, rounded corners=4pt, draw=#1, thick, fill=#1!5, minimum width=3.6cm, minimum height=1.2cm, font=\footnotesize\bfseries, align=center},
+        evolve/.style={rectangle, rounded corners=4pt, draw=#1, ultra thick, fill=#1!10, minimum width=4.0cm, minimum height=1.3cm, font=\footnotesize\bfseries, align=center},
+        net/.style={rectangle, dashed, draw=chuGray!80, rounded corners=8pt, inner sep=12pt},
+        arrow/.style={-stealth, thick, color=chuGray!60!black},
+        line/.style={draw, thick, color=chuLightBlue, -stealth},
+        trans/.style={draw, ultra thick, color=orange!80, dashed, -stealth}
+      ]
+
+      % --- Couches Stables (Périphérie) ---
+      \node[box=bronze] (bronze) {Zone Bronze\\(Données Invariées)};
+      
+      % --- Bloc Central Évolutif (Zone Silver) ---
+      \node[evolve=chuAccent, right=2.5cm of bronze, yshift=1cm] (pandas) {Moteur Actuel\\Python (Pandas)};
+      \node[evolve=chuBlue, below=1.2cm of pandas] (spark) {Évolution Future\\PySpark (Spark)};
+      
+      % --- Couches Hautes Stables ---
+      \node[box=gold, right=2.5cm of pandas, yshift=-1cm] (gold) {Zone Gold\\(Modèle DWH Fixe)};
+      \node[box=chuDark, below=of gold] (bi) {Interface Restitution\\Metabase (Identique)};
+
+      % --- Groupements sémantiques / Conteneurs d'infrastructure ---
+      \node[net, fit=(pandas) (spark), label={[font= \small\bfseries\color{chuAccent}]above:Zone Silver (Interchangeable)}] (silver_zone) {};
+
+      % --- Tracé des flux logiques permanents ---
+      \draw[line] (bronze.east) -- (pandas.west);
+      \draw[line, dashed, color=chuGray] (bronze.east) -- (spark.west);
+      
+      \draw[line] (pandas.east) -- (gold.west);
+      \draw[line, dashed, color=chuGray] (spark.east) -- (gold.west);
+      
+      \draw[arrow] (gold.south) -- (bi.north);
+
+      % --- Flèche d'évolution technologique interne ---
+      \draw[trans] (pandas.south) -- node[right, font=\tiny\bfseries, text=orange!90!black] {Trajectoire Scale-Up} (spark.north);
+
+    \end{tikzpicture}%
+  }
+  \caption{Modularité de l'architecture et trajectoire d'évolution vers le calcul distribué}
+\end{figure}
+
+
+% ═══════════════════════════════════════════════════════════════════
+% CHAPITRE 3 — MODÉLISATION DIMENSIONNELLE (ZONE GOLD)
+% ═══════════════════════════════════════════════════════════════════
+\chapter{Modélisation dimensionnelle (Zone Gold)}
+
+La zone Gold concentre l’ensemble des structures décisionnelles utilisées par les tableaux de bord Metabase. Ce chapitre formalise les besoins analytiques, le choix du modèle décisionnel et la spécification détaillée des tables de faits et de dimensions.
+
+% ==================================================================
+% 3.1 EXPRESSION DES BESOINS ANALYTIQUES ET INDICATEURS MÉTIERS
+% ==================================================================
+\section{Expression des besoins analytiques et indicateurs métiers}
+
+La conception de l’entrepôt de données du CHU repose sur une distinction claire entre deux types de métriques afin de garantir la flexibilité et l’évolutivité de la plateforme :
+
+\begin{itemize}[label=\textcolor{chuBlue}{\textbullet}]
+  \item \textbf{Mesures brutes} : valeurs numériques absolues et additives, stockées physiquement dans les tables de faits. Elles constituent le socle de calcul.
+  \item \textbf{Mesures calculées} : indicateurs dérivés (taux, ratios, pourcentages) calculés dynamiquement dans la couche de restitution. Elles ne sont jamais stockées en dur pour éviter les biais lors de changements d’axes ou d’agrégations.
+\end{itemize}
+
+\subsection{Indicateurs liés aux consultations et hospitalisations}
+
+Ce premier domaine couvre le suivi de l’activité de soins courante, ambulatoire et hospitalière.
+
+\begin{itemize}[label=\textcolor{chuBlue}{\textbullet}]
+  \item \textbf{\code{FAIT\_CONSULTATION} (mesures brutes)} :  
+  nombre brut de consultations (via un \textit{COUNT} de l’identifiant unitaire) et durée de l’acte calculée en minutes dans le flux ETL (différence entre l’heure de fin et l’heure de début).
+  \item \textbf{\code{FAIT\_HOSPITALISATION} (mesures brutes)} :  
+  volume absolu de séjours et durée globale d’hospitalisation exprimée en jours (\code{Jour\_Hospitalisation}). 
+\end{itemize}
+
+Ces mesures permettent de calculer ensuite des indicateurs tels que le taux d’occupation des lits, la durée moyenne de séjour ou les volumes d’activité par spécialité.
+
+\subsection{Indicateurs liés aux décès}
+
+Ce domaine est destiné au pilotage épidémiologique et à la surveillance de la mortalité à des fins de santé publique.
+
+\begin{itemize}[label=\textcolor{chuBlue}{\textbullet}]
+  \item \textbf{\code{FAIT\_DECES} (mesures brutes)} :  
+  dénombrement absolu des événements de décès enregistrés sur l’exercice de référence, ventilés par région, tranche d’âge, sexe et éventuellement pathologie. 
+\end{itemize}
+
+\subsection{Indicateurs liés à la satisfaction des usagers}
+
+Ce dernier domaine agrège l’expérience patient issue des enquêtes nationales de la Haute Autorité de Santé (campagnes e-Satis, indicateurs IQSS).
+
+\begin{itemize}[label=\textcolor{chuBlue}{\textbullet}]
+  \item \textbf{\code{FAIT\_SATISFACTION} (mesures brutes)} :  
+  score de satisfaction globale, notes par dimension (accueil, prise en charge médicale, prise en charge infirmière, chambre, repas, organisation de la sortie), taux de recommandation brut, classement de l’établissement et volume de répondants.
+
+\subsection{Synthèse des mesures calculées (couche restitution)}
+
+Les taux et agrégats demandés par la direction sont calculés à la volée dans la couche BI à partir des mesures brutes. Le tableau suivant illustre quelques indicateurs clés.
+
+\begin{table}[htbp]
+\centering
+\footnotesize
+\renewcommand{\arraystretch}{1.5}
+\setlength{\tabcolsep}{5pt}
+\begin{tabularx}{\linewidth}{@{} >{\raggedright\arraybackslash}p{5.5cm}
+                                  >{\raggedright\arraybackslash}X @{}}
+\toprule
+\rowcolor{chuBlue!15}
+\textbf{Besoin analytique} & \textbf{Formule et tables mobilisées} \\
+\midrule
+
+Taux de consultation par établissement &
+COUNT(consult.) / COUNT(total) $\times$ 100
+\newline \textit{FAIT\_CONSULTATION + DIM\_TEMPS + DIM\_ETAB.} \\
+
+\rowcolor{chuGray}
+Taux de consultation par diagnostic &
+COUNT(consult.) / COUNT(total) $\times$ 100
+\newline \textit{FAIT\_CONSULTATION + DIM\_DIAG.} \\
+
+Taux d'hospitalisation par période &
+COUNT(hospi.) / COUNT(patients actifs) $\times$ 100
+\newline \textit{FAIT\_HOSPIT. + DIM\_TEMPS} \\
+
+\rowcolor{chuGray}
+Taux d'hospitalisation par diagnostic &
+COUNT(hospi.) / COUNT(total) $\times$ 100
+\newline \textit{FAIT\_HOSPIT. + DIM\_DIAG.} \\
+
+Taux d'hospitalisation par sexe &
+COUNT(hospi.) / COUNT(total) $\times$ 100
+\newline \textit{FAIT\_HOSPIT. + DIM\_PATIENT} \\
+
+\rowcolor{chuGray}
+Taux d'hospitalisation par tranche d'âge &
+COUNT(hospi.) / COUNT(total) $\times$ 100
+\newline \textit{FAIT\_HOSPIT. + DIM\_PATIENT} \\
+
+Taux de consultation par professionnel &
+COUNT(consult.) / COUNT(total) $\times$ 100
+\newline \textit{FAIT\_CONSULTATION + DIM\_PROF.} \\
+
+\rowcolor{chuGray}
+Volume de décès par région (2019) &
+COUNT(décès) GROUP BY région
+\newline \textit{FAIT\_DECES + DIM\_TEMPS + DIM\_GEO.} \\
+
+Taux de satisfaction par région (2020) &
+AVG(score\_global) GROUP BY région
+\newline \textit{FAIT\_SATISFACTION + DIM\_GEO.} \\
+
+\bottomrule
+\end{tabularx}
+\caption{Mesures calculées dynamiquement dans la couche de restitution}
+\label{tab:kpi_gold}
+\end{table}
+
+\clearpage
+
+% ==================================================================
+% 3.2 CHOIX DU MODÈLE DÉCISIONNEL
+% ==================================================================
+\section{Choix du modèle décisionnel}
+
+\subsection{Justification d'un schéma en constellation}
+
+L'architecture décisionnelle du CHU retient un modèle en constellation, caractérisé par plusieurs tables de faits spécialisées partageant un ensemble commun de dimensions conformes. Ce choix est motivé par la coexistence de processus métiers distincts (consultations, hospitalisations, décès, satisfaction) issus de sources hétérogènes.
+
+L'utilisation d'une simple table de faits centralisée aurait généré un volume important de valeurs nulles et complexifié l'analyse croisée. À l'inverse, l'approche en constellation garantit :
+\begin{itemize}[leftmargin=1.5cm, label=\textcolor{chuBlue}{\textbullet}]
+    \item \textbf{Une intégrité référentielle transverse :} Les dimensions partagées (comme \texttt{DIM\_TEMPS} ou \texttt{DIM\_GEOGRAPHIE}) assurent que les analyses restent cohérentes lorsqu'on croise les différentes tables de faits.
+    \item \textbf{Une évolutivité naturelle :} L'ajout ultérieur d'un nouveau processus (ex. la logistique des médicaments) nécessitera simplement l'ajout d'une nouvelle table de faits reliée aux dimensions préexistantes.
+\end{itemize}
+
+\begin{figure}[H]
+  \centering
+  \resizebox{0.95\textwidth}{!}{%
+  \begin{tikzpicture}[
+      node distance=3.5cm,
+      dim/.style={rectangle, rounded corners=6pt, draw=chuBlue, thick, fill=chuBlue!8, inner sep=12pt, align=center, font=\small\bfseries, text=chuDark},
+      fait/.style={rectangle, rounded corners=4pt, draw=chuAccent, ultra thick, fill=chuAccent!5, inner sep=14pt, align=center, font=\small\bfseries, text=chuDark},
+      arrow/.style={-, thick, color=chuGray!60!black},
+      legend/.style={rectangle, fill=chuGray!30, draw=chuGray!80, rounded corners=4pt, inner sep=10pt, font=\footnotesize}
+  ]
+
+  % --- TABLES DE FAITS (Disposées au centre en carré spacieux) ---
+  \node[fait] (f_hosp) at (-3.5, 1.8) {FAIT\_HOSPITALISATION};
+  \node[fait] (f_cons) at (3.5, 1.8) {FAIT\_CONSULTATION};
+  \node[fait] (f_dec) at (-3.5, -1.8) {FAIT\_DECES};
+  \node[fait] (f_sat) at (3.5, -1.8) {FAIT\_SATISFACTION};
+
+  % --- TABLES DE DIMENSIONS (Périphérie éclatée pour éviter les chevauchements) ---
+  \node[dim] (d_temps) at (0, 5.5) {DIM\_TEMPS};
+  \node[dim] (d_geo) at (0, -5.5) {DIM\_GEOGRAPHIE};
+  
+  \node[dim] (d_pat) at (-8.5, 3.5) {DIM\_PATIENT};
+  \node[dim] (d_diag) at (-8.5, -3.5) {DIM\_DIAGNOSTIC};
+  
+  \node[dim] (d_etab) at (8.5, 3.5) {DIM\_ETABLISSEMENT};
+  \node[dim] (d_prof) at (8.5, -3.5) {DIM\_PROFESSIONNEL};
+
+  % --- LIAISONS : FAIT_HOSPITALISATION ---
+  \draw[arrow] (f_hosp) -- (d_temps);
+  \draw[arrow] (f_hosp) -- (d_pat);
+  \draw[arrow] (f_hosp) -- (d_diag);
+  \draw[arrow] (f_hosp) -- (d_etab);
+
+  % --- LIAISONS : FAIT_CONSULTATION ---
+  \draw[arrow] (f_cons) -- (d_temps);
+  \draw[arrow] (f_cons) -- (d_pat);
+  \draw[arrow] (f_cons) -- (d_diag);
+  \draw[arrow] (f_cons) -- (d_etab);
+  \draw[arrow] (f_cons) -- (d_prof);
+
+  % --- LIAISONS : FAIT_DECES ---
+  \draw[arrow] (f_dec) -- (d_temps);
+  \draw[arrow] (f_dec) -- (d_geo);
+  \draw[arrow] (f_dec) -- (d_diag);
+
+  % --- LIAISONS : FAIT_SATISFACTION ---
+  \draw[arrow] (f_sat) -- (d_temps);
+  \draw[arrow] (f_sat) -- (d_etab);
+  \draw[arrow] (f_sat) -- (d_geo);
+
+  \end{tikzpicture}%
+  }
+  \caption{Schéma en constellation simplifié final du modèle analytique CHU}
+\end{figure}
+
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1\linewidth]{imgs/modele_en_constellation.jpg}
+    \caption{Modèle en Constellation complet & légendé }
+    \label{fig:placeholder}
+\end{figure}
+
+Forcer l’ensemble des mesures dans une seule table de faits (schéma en étoile simple) aurait conduit à :
+
+\begin{itemize}[label=\textcolor{chuBlue}{\textbullet}]
+  \item une prolifération de colonnes non pertinentes ou nulles, notamment pour les faits liés aux décès et à la satisfaction ;
+  \item des risques d’erreurs lors des agrégations, du fait des différences de granularité (événement patient unitaire vs score annuel d’établissement) ;
+  \item une complexité accrue des règles de gestion pour garantir la cohérence des analyses.
+\end{itemize}
+
+La constellation permet au contraire d’isoler chaque coeur métier dans une table de faits dédiée, tout en partageant les dimensions communes (temps, patient, établissement, géographie).
+
+
+
+\clearpage
+\subsection{Granularité des faits et niveaux d’agrégation}
+
+Chaque table de faits est définie à la granularité la plus fine compatible avec les sources :
+
+\begin{itemize}[label=\textcolor{chuBlue}{\textbullet}]
+  \item \textbf{\code{FAIT\_CONSULTATION}} : une ligne par consultation unitaire (source : PostgreSQL opérationnel).
+  \item \textbf{\code{FAIT\_HOSPITALISATION}} : une ligne par séjour hospitalier complet (source : \code{Hospitalisations.csv}).
+  \item \textbf{\code{FAIT\_DECES}} : une ligne par événement de décès (source : \code{deces.csv}), avec une liaison vers \dimpat{} configurée en nullable du fait du rapprochement probabiliste.
+  \item \textbf{\code{FAIT\_SATISFACTION}} : une ligne par combinaison établissement / année / type d’enquête (source : Open Data HAS). 
+\end{itemize}
+
+Cette granularité permet d’agréger ensuite les indicateurs au niveau souhaité (par établissement, par région, par période) sans perte d’information.
+
+\clearpage
+
+% ==================================================================
+% 3.3 SPÉCIFICATION DES TABLES DE FAITS
+% ==================================================================
+\section{Spécification des tables de faits}
+
+% ── FAIT_HOSPITALISATION ─────────────────────────────────────────
+\subsection{Table de faits \texttt{FAIT\_HOSPITALISATION}}
+
+Cette table de faits centralise les séjours hospitaliers en reliant chaque enregistrement
+aux dimensions temporelle, patient, établissement et diagnostic. Elle fournit les mesures
+de volumétrie nécessaires au suivi de l’activité d’hospitalisation.
+
+\begin{table}[htbp]
+\centering\footnotesize\renewcommand{\arraystretch}{1.4}
+\begin{tabularx}{\linewidth}{@{} L{3.6cm} L{1.5cm} L{2.0cm} X @{}}
+\toprule
+\rowcolor{chuBlue!15}
+\textbf{Colonne} & \textbf{Type} & \textbf{Contrainte} & \textbf{Description} \\
+\midrule
+\texttt{id\_fait\_hospitalisation} & \texttt{INT} & \texttt{PK} & Clé primaire artificielle incrémentale \\
+\rowcolor{chuGray}
+\texttt{id\_temps} & \texttt{INT} & \texttt{FK} & Liaison vers \textit{DIM\_TEMPS} \\
+\texttt{id\_patient} & \texttt{INT} & \texttt{FK} & Liaison vers \textit{DIM\_PATIENT} \\
+\rowcolor{chuGray}
+\texttt{finess} & \texttt{VARCHAR} & \texttt{FK} & Clé unifiée vers \textit{DIM\_ETABLISSEMENT} \\
+\texttt{code\_diag} & \texttt{VARCHAR} & \texttt{FK} & Liaison vers \textit{DIM\_DIAGNOSTIC} \\
+\rowcolor{chuGray}
+\texttt{duree\_sejour} & \texttt{INT} & Mesure & Équivalent de \texttt{Jour\_Hospitalisation} \\
+\texttt{nb\_hospitalisations} & \texttt{INT} & Mesure & Valeur constante = 1 (facilite la sommation) \\
+\bottomrule
+\end{tabularx}
+\caption{Structure de la table \texttt{FAIT\_HOSPITALISATION}}
+\label{tab:fait_hospitalisation}
+\end{table}
+
+Le diagramme en étoile associé met en évidence la position centrale de la table de faits
+par rapport aux dimensions temps, patient, établissement et diagnostic, ainsi que les
+mesures d’activité d’hospitalisation.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.85\textwidth]{imgs/fait_hospitalisation.png}
+  \caption{Diagramme en étoile de la table \texttt{FAIT\_HOSPITALISATION}}
+  \label{fig:fait_hospitalisation}
+\end{figure}
+\clearpage
+
+% ── FAIT_CONSULTATION ────────────────────────────────────────────
+\subsection{Table de faits \texttt{FAIT\_CONSULTATION}}
+
+Cette table de faits décrit les consultations ambulatoires en reliant chaque acte
+aux dimensions temps, patient, professionnel, établissement et diagnostic. Elle
+permet de suivre la charge de travail et la durée des consultations.
+
+\begin{table}[htbp]
+\centering\footnotesize\renewcommand{\arraystretch}{1.4}
+\begin{tabularx}{\linewidth}{@{} L{3.6cm} L{1.5cm} L{2.0cm} X @{}}
+\toprule
+\rowcolor{chuBlue!15}
+\textbf{Colonne} & \textbf{Type} & \textbf{Contrainte} & \textbf{Description} \\
+\midrule
+\texttt{id\_fait\_consultation} & \texttt{INT} & \texttt{PK} & Clé primaire artificielle incrémentale \\
+\rowcolor{chuGray}
+\texttt{id\_temps} & \texttt{INT} & \texttt{FK} & Liaison vers \textit{DIM\_TEMPS} \\
+\texttt{id\_patient} & \texttt{INT} & \texttt{FK} & Liaison vers \textit{DIM\_PATIENT} \\
+\rowcolor{chuGray}
+\texttt{id\_professionnel} & \texttt{VARCHAR} & \texttt{FK} & Liaison vers \textit{DIM\_PROFESSIONNEL} \\
+\texttt{code\_diag} & \texttt{VARCHAR} & \texttt{FK} & Liaison vers \textit{DIM\_DIAGNOSTIC} \\
+\rowcolor{chuGray}
+\texttt{finess} & \texttt{VARCHAR} & \texttt{FK} & Clé unifiée vers \textit{DIM\_ETABLISSEMENT} \\
+\texttt{duree\_consultation} & \texttt{INT} & Mesure & Durée en minutes (\texttt{Heure\_fin} $-$ \texttt{Heure\_debut}) \\
+\rowcolor{chuGray}
+\texttt{nb\_consultations} & \texttt{INT} & Mesure & Valeur constante = 1 (facilite la sommation) \\
+\bottomrule
+\end{tabularx}
+\caption{Structure de la table \texttt{FAIT\_CONSULTATION}}
+\label{tab:fait_consultation}
+\end{table}
+
+Le diagramme en étoile associé met en relation la table de faits avec les dimensions
+temps, patient, professionnel, établissement et diagnostic, afin de cartographier
+les principaux axes d’analyse des consultations.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.85\textwidth]{imgs/fait_consultation.png}
+  \caption{Diagramme en étoile de la table \texttt{FAIT\_CONSULTATION}}
+  \label{fig:fait_consultation}
+\end{figure}
+\clearpage
+
+% ── FAIT_DECES ───────────────────────────────────────────────────
+\subsection{Table de faits \texttt{FAIT\_DECES}}
+
+Cette table de faits recense les décès en les rattachant aux dimensions temporelle,
+géographique et, lorsque possible, patient. Elle sert de base aux analyses de
+mortalité par période, zone et population.
+
+\begin{table}[htbp]
+\centering\footnotesize\renewcommand{\arraystretch}{1.4}
+\begin{tabularx}{\linewidth}{@{} L{3.6cm} L{1.5cm} L{2.2cm} X @{}}
+\toprule
+\rowcolor{chuBlue!15}
+\textbf{Colonne} & \textbf{Type} & \textbf{Contrainte} & \textbf{Description} \\
+\midrule
+\texttt{id\_fait\_deces} & \texttt{INT} & \texttt{PK} & Clé primaire artificielle incrémentale \\
+\rowcolor{chuGray}
+\texttt{id\_temps} & \texttt{INT} & \texttt{FK} & Liaison vers \textit{DIM\_TEMPS} \\
+\texttt{id\_geo} & \texttt{INT} & \texttt{FK} & Liaison vers \textit{DIM\_GEOGRAPHIE} \\
+\rowcolor{chuGray}
+\texttt{id\_patient} & \texttt{INT} & \texttt{FK nullable} & Liaison vers \textit{DIM\_PATIENT} (rapprochement probabiliste) \\
+\texttt{nb\_deces} & \texttt{INT} & Mesure & Valeur constante = 1 (facilite la sommation) \\
+\bottomrule
+\end{tabularx}
+\caption{Structure de la table \texttt{FAIT\_DECES}}
+\label{tab:fait_deces}
+\end{table}
+
+Le diagramme en étoile met en lumière les liens entre la table de faits et les
+dimensions temps, géographie et patient, pour faciliter les analyses territoriales
+et temporelles de la mortalité.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.85\textwidth]{imgs/fait_deces.png}
+  \caption{Diagramme en étoile de la table \texttt{FAIT\_DECES}}
+  \label{fig:fait_deces}
+\end{figure}
+\clearpage
+
+% ── FAIT_SATISFACTION ────────────────────────────────────────────
+\subsection{Table de faits \texttt{FAIT\_SATISFACTION}}
+
+Cette table de faits agrège les résultats des enquêtes de satisfaction en les
+rattachant aux dimensions temps, établissement et géographie. Elle porte les
+différents scores thématiques ainsi que les indicateurs globaux de perception.
+
+\begin{table}[htbp]
+\centering\footnotesize\renewcommand{\arraystretch}{1.4}
+\begin{tabularx}{\linewidth}{@{} L{3.6cm} L{1.5cm} L{2.0cm} X @{}}
+\toprule
+\rowcolor{chuBlue!15}
+\textbf{Colonne} & \textbf{Type} & \textbf{Contrainte} & \textbf{Description} \\
+\midrule
+\texttt{id\_fait\_satisfaction} & \texttt{INT} & \texttt{PK} & Clé primaire artificielle incrémentale \\
+\rowcolor{chuGray}
+\texttt{id\_temps} & \texttt{INT} & \texttt{FK} & Liaison vers \textit{DIM\_TEMPS} \\
+\texttt{finess} & \texttt{VARCHAR} & \texttt{FK} & Clé unifiée vers \textit{DIM\_ETABLISSEMENT} \\
+\rowcolor{chuGray}
+\texttt{id\_geo} & \texttt{INT} & \texttt{FK} & Liaison vers \textit{DIM\_GEOGRAPHIE} \\
+\texttt{type\_enquete} & \texttt{VARCHAR} & Attribut & Nature de la campagne (\texttt{48H} ou \texttt{CA}) \\
+\rowcolor{chuGray}
+\texttt{score\_global} & \texttt{FLOAT} & Mesure & Note globale ajustée de l'établissement \\
+\texttt{score\_accueil} & \texttt{FLOAT} & Mesure & Score lié à l'accueil \\
+\rowcolor{chuGray}
+\texttt{score\_pec\_medical} & \texttt{FLOAT} & Mesure & Score de prise en charge médicale \\
+\texttt{score\_pec\_infirmier} & \texttt{FLOAT} & Mesure & Score de prise en charge infirmière \\
+\rowcolor{chuGray}
+\texttt{score\_chambre} & \texttt{FLOAT} & Mesure & Score lié au confort de la chambre \\
+\texttt{score\_repas} & \texttt{FLOAT} & Mesure & Score lié à la qualité des repas \\
+\rowcolor{chuGray}
+\texttt{score\_sortie} & \texttt{FLOAT} & Mesure & Score lié à l'organisation de la sortie \\
+\texttt{nb\_repondants} & \texttt{INT} & Mesure & Nombre de patients répondants \\
+\rowcolor{chuGray}
+\texttt{taux\_recommandation} & \texttt{FLOAT} & Mesure & Pourcentage brut de recommandation \\
+\texttt{classement} & \texttt{VARCHAR} & Attribut & Label de performance (A, B, C, D, DI, NR) \\
+\bottomrule
+\end{tabularx}
+\caption{Structure de la table \texttt{FAIT\_SATISFACTION}}
+\label{tab:fait_satisfaction}
+\end{table}
+
+Le diagramme en étoile visualise la table de faits au centre des dimensions temps,
+établissement et géographie, en mettant en avant les différents scores de
+satisfaction et indicateurs dérivés.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.85\textwidth]{imgs/fait_satisfaction.png}
+  \caption{Diagramme en étoile de la table \texttt{FAIT\_SATISFACTION}}
+  \label{fig:fait_satisfaction}
+\end{figure}
+\clearpage
+
+% ==================================================================
+% 3.4 SPÉCIFICATION DES TABLES DE DIMENSIONS
+% ==================================================================
+\section{Spécification des tables de dimensions}
+
+Les dimensions fournissent les axes contextuels indispensables au filtrage et aux analyses croisées.
+
+% ── DIM_ETABLISSEMENT ─────────────────────────────────────────────
+\begin{table}[htbp]
+\centering\footnotesize\renewcommand{\arraystretch}{1.4}
+\begin{tabularx}{\linewidth}{@{} L{3.0cm} L{1.5cm} L{1.8cm} X @{}}
+\toprule
+\rowcolor{chuBlue!15}
+\textbf{Colonne} & \textbf{Type} & \textbf{Rôle} & \textbf{Spécification} \\
+\midrule
+\texttt{finess} & \texttt{VARCHAR} & PK & Code FINESS géographique (clé unifiée) \\
+\rowcolor{chuGray}
+\texttt{nom} & \texttt{VARCHAR} & Attribut & Raison sociale de la structure \\
+\texttt{commune} & \texttt{VARCHAR} & Attribut & Ville d'implantation \\
+\rowcolor{chuGray}
+\texttt{code\_postal} & \texttt{VARCHAR} & Attribut & Code postal de la structure \\
+\texttt{code\_commune} & \texttt{VARCHAR} & Attribut & Code officiel INSEE de la commune \\
+\rowcolor{chuGray}
+\texttt{id\_geo} & \texttt{INT} & FK & Liaison obligatoire vers \textit{DIM\_GEOGRAPHIE} \\
+\bottomrule
+\end{tabularx}
+\caption{Structure de la dimension \texttt{DIM\_ETABLISSEMENT}}
+\label{tab:dim_etab}
+\end{table}
+
+% ── DIM_DIAGNOSTIC ────────────────────────────────────────────────
+\begin{table}[htbp]
+\centering\footnotesize\renewcommand{\arraystretch}{1.4}
+\begin{tabularx}{\linewidth}{@{} L{3.0cm} L{1.5cm} L{1.8cm} X @{}}
+\toprule
+\rowcolor{chuBlue!15}
+\textbf{Colonne} & \textbf{Type} & \textbf{Rôle} & \textbf{Spécification} \\
+\midrule
+\texttt{code\_diag} & \texttt{VARCHAR} & PK & Code alphanumérique CIM-10 \\
+\rowcolor{chuGray}
+\texttt{libelle} & \texttt{VARCHAR} & Attribut & Libellé textuel de la pathologie \\
+\bottomrule
+\end{tabularx}
+\caption{Structure de la dimension \texttt{DIM\_DIAGNOSTIC}}
+\label{tab:dim_diag}
+\end{table}
+
+% ── DIM_PROFESSIONNEL ─────────────────────────────────────────────
+\begin{table}[htbp]
+\centering\footnotesize\renewcommand{\arraystretch}{1.4}
+\begin{tabularx}{\linewidth}{@{} L{3.0cm} L{1.5cm} L{1.8cm} X @{}}
+\toprule
+\rowcolor{chuBlue!15}
+\textbf{Colonne} & \textbf{Type} & \textbf{Rôle} & \textbf{Spécification} \\
+\midrule
+\texttt{id\_professionnel} & \texttt{VARCHAR} & PK & Identifiant unifié (RPPS / ADELI) \\
+\rowcolor{chuGray}
+\texttt{nom} & \texttt{VARCHAR} & Attribut & Nom de famille du professionnel \\
+\texttt{profession} & \texttt{VARCHAR} & Attribut & Corps de métier (médecin, sage-femme, IDEL, ...) \\
+\rowcolor{chuGray}
+\texttt{specialite} & \texttt{VARCHAR} & Attribut & Libellé complet de la spécialité clinique \\
+\bottomrule
+\end{tabularx}
+\caption{Structure de la dimension \texttt{DIM\_PROFESSIONNEL}}
+\label{tab:dim_pro}
+\end{table}
+
+% ── DIM_GEOGRAPHIE ────────────────────────────────────────────────
+\begin{table}[htbp]
+\centering\footnotesize\renewcommand{\arraystretch}{1.4}
+\begin{tabularx}{\linewidth}{@{} L{3.0cm} L{1.5cm} L{1.8cm} X @{}}
+\toprule
+\rowcolor{chuBlue!15}
+\textbf{Colonne} & \textbf{Type} & \textbf{Rôle} & \textbf{Spécification} \\
+\midrule
+\texttt{id\_geo} & \texttt{INT} & PK & Clé primaire technique artificielle \\
+\rowcolor{chuGray}
+\texttt{code\_region} & \texttt{VARCHAR} & Attribut & Code numérique de la région administrative \\
+\texttt{libelle\_region} & \texttt{VARCHAR} & Attribut & Nom de la région administrative française \\
+\rowcolor{chuGray}
+\texttt{pays} & \texttt{VARCHAR} & Attribut & Identifiant national global \\
+\bottomrule
+\end{tabularx}
+\caption{Structure de la dimension \texttt{DIM\_GEOGRAPHIE}}
+\label{tab:dim_geo}
+\end{table}
+
+\clearpage
+
+% ==================================================================
+% 3.5 INTÉGRATION, INTÉGRITÉ ET COUVERTURE DU MODÈLE
+% ==================================================================
+\section{Intégration, intégrité et couverture du modèle}
+
+\subsection{Clés primaires, clés étrangères et intégrité référentielle}
+
+L’intégration en constellation repose sur un système cohérent de clés primaires (PK) et de clés étrangères (FK). 
+
+\begin{itemize}[label=\textcolor{chuBlue}{\textbullet}]
+  \item \textbf{PK des dimensions} : chaque dimension possède une clé primaire unique (entier technique ou code métier stable comme le FINESS ou le code CIM-10).
+  \item \textbf{PK des faits} : chaque table de faits possède une clé primaire propre (\code{id\_fait\_consultation}, \code{id\_fait\_hospitalisation}, etc.).
+  \item \textbf{FK dans les faits} : les tables de faits centralisent les PK de toutes les dimensions auxquelles elles se rattachent, ce qui garantit l’intégrité des jointures.
+\end{itemize}
+
+Les relations sont systématiquement de type \(1:N\) : une ligne de dimension peut être liée à plusieurs lignes de faits, mais chaque fait ne pointe que vers une seule ligne de dimension.
+
+\subsection{Matrice de couverture des indicateurs métiers}
+
+La matrice suivante vérifie que chaque besoin exprimé dans le chapitre 1 dispose d’une traduction explicite dans le modèle décisionnel. :6]
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabularx}{\linewidth}{L{5cm} L{3.8cm} X}
+\toprule
+\rowcolor{chuBlue!15}
+\textbf{Besoin utilisateur} & \textbf{Table de faits} & \textbf{Dimensions mobilisées} \\
+\midrule
+Évolution du volume de consultations ambulatoires &
+\code{FAIT\_CONSULTATION} (\code{nb\_consultations}) &
+\dimtps{} (année, mois), \dimeta{} (nom, commune) \\
+\rowcolor{chuGray}
+Durée moyenne de séjour par pathologie &
+\code{FAIT\_HOSPITALISATION} (\code{duree\_sejour}) &
+\diag{} (libellé), \dimtps{} \\
+Analyse de la mortalité par région &
+\code{FAIT\_DECES} (\code{nb\_deces}) &
+\dimgeo{} (région), \dimpat{} (tranche d’âge, sexe) \\
+\rowcolor{chuGray}
+Score de satisfaction sur l’accueil &
+\code{FAIT\_SATISFACTION} (\code{score\_accueil}) &
+\dimeta{} (nom), \dimtps{} (campagne) \\
+\bottomrule
+\end{tabularx}
+\caption{Couverture des indicateurs métiers par le modèle en constellation}
+\label{tab:couverture_model_gold}
+\end{table}
+
+Cette matrice valide que les huit indicateurs décisionnels définis au chapitre 1 peuvent être reconstruits de manière univoque à partir des tables de faits et des dimensions décrites dans ce chapitre, sans logique implicite cachée dans la couche de restitution.
+
+
+
+% ═══════════════════════════════════════════════════════════════════
+% CHAPITRE 4 — SCRIPTS ETL PYTHON D'ALIMENTATION (ZONE SILVER)
+% ═══════════════════════════════════════════════════════════════════
+\chapter{Scripts ETL Python d'alimentation (Zone Silver)}
+
+Les pipelines ETL constituent le coeur opérationnel de l'architecture en médaillon. Ils assurent la transition entre les données brutes de la zone Bronze et le schéma décisionnel de la zone Gold, en appliquant les règles de qualité, de normalisation et de conformité RGPD décrites aux chapitres précédents. Ce chapitre présente les principes généraux de développement retenus, puis détaille chacun des quatre jobs Python mis en oeuvre.
+
+% ==================================================================
+% 4.1 PRINCIPES GÉNÉRAUX
+% ==================================================================
+\section{Principes généraux de développement des pipelines}
+
+\subsection{Structure type d'un script ETL}
+
+Chaque pipeline suit une structure en trois phases classiques, systématiquement reproduite pour garantir la lisibilité et la maintenabilité du code :
+
+\begin{enumerate}
+  \item \textbf{Extraction} : connexion à la source (PostgreSQL opérationnel ou fichier plat), lecture des données brutes dans un DataFrame pandas.
+  \item \textbf{Transformation} : application des règles métier, normalisation des formats, contrôles de qualité, pseudonymisation des identifiants sensibles.
+  \item \textbf{Chargement} : écriture dans le schéma \texttt{datawarehouse} via SQLAlchemy, avec gestion des conflits et des doublons.
+\end{enumerate}
+
+\begin{lstlisting}[style=python, caption={Structure type d'un pipeline ETL}, label={lst:etl_structure}]
+from sqlalchemy import create_engine
+import pandas as pd
+from etl.utils import get_engine, anonymize, log_step
+
+def run():
+    # 1. Extraction
+    engine_src = get_engine("operational")
+    df = pd.read_sql("SELECT * FROM table_source", engine_src)
+    log_step("Extraction", len(df))
+
+    # 2. Transformation
+    df = transform(df)
+    log_step("Transformation", len(df))
+
+    # 3. Chargement
+    engine_dwh = get_engine("datawarehouse")
+    df.to_sql("table_cible", engine_dwh,
+              if_exists="append", index=False)
+    log_step("Chargement", len(df))
+\end{lstlisting}
+
+\subsection{Règles communes de transformation}
+
+Un ensemble de règles transversales est appliqué dans tous les pipelines, centralisées dans le module \texttt{etl/utils.py} :
+
+\begin{itemize}[label=\textcolor{chuBlue}{\textbullet}]
+  \item \textbf{Format de date} : conversion stricte au format \texttt{YYYY-MM-DD} via \texttt{pd.to\_datetime()} avec \texttt{errors='coerce'}.
+  \item \textbf{Valeurs manquantes} : suppression des lignes dont une clé étrangère est nulle via \texttt{dropna(subset=[...])}.
+  \item \textbf{Doublons} : appel systématique à \texttt{drop\_duplicates()} sur les colonnes constituant la clé fonctionnelle.
+  \item \textbf{Encodage} : détection automatique via \texttt{chardet} pour les fichiers CSV d'origine hétérogène.
+\end{itemize}
+
+\subsection{Module centralisé \texttt{etl/utils.py}}
+
+\begin{lstlisting}[style=python, caption={Module utilitaire centralisé \texttt{etl/utils.py}}, label={lst:utils}]
+import hashlib, hmac, os, logging
+from sqlalchemy import create_engine
+
+SECRET_KEY = os.getenv("HASH_SECRET_KEY", "")
+
+def get_engine(schema: str):
+    user = os.getenv("DB_USER")
+    pwd  = os.getenv("DB_PASSWORD")
+    host = os.getenv("DB_HOST", "localhost")
+    port = os.getenv("DB_PORT", "5432")
+    db   = os.getenv("DB_NAME")
+    url  = f"postgresql+psycopg2://{user}:{pwd}@{host}:{port}/{db}"
+    return create_engine(
+        url, connect_args={"options": f"-csearch_path={schema}"}
+    )
+
+def anonymize(value: str) -> str:
+    """Pseudonymise un identifiant par HMAC-SHA256 tronque a 16 cars."""
+    digest = hmac.new(
+        SECRET_KEY.encode(), str(value).encode(), hashlib.sha256
+    ).hexdigest()
+    return digest[:16]
+
+def log_step(step: str, count: int) -> None:
+    logging.info(f"[ETL] {step} : {count} lignes traitees.")
+\end{lstlisting}
+
+% ==================================================================
+% 4.2 PIPELINE MÉDICO-ADMINISTRATIF
+% ==================================================================
+\section{Pipeline d'alimentation des données médico-administratives}
+\label{sec:job1}
+
+\subsection{Périmètre et source}
+
+Ce premier job extrait les activités cliniques depuis le schéma \texttt{operational} de PostgreSQL et alimente les tables \texttt{FAIT\_CONSULTATION} et \texttt{FAIT\_HOSPITALISATION}.
+
+\begin{table}[htbp]
+\centering\footnotesize\renewcommand{\arraystretch}{1.4}
+\begin{tabularx}{\linewidth}{@{} L{3.5cm} X @{}}
+\toprule
+\rowcolor{chuBlue!15}
+\textbf{Paramètre} & \textbf{Valeur} \\
+\midrule
+Source & Schéma \texttt{operational} (PostgreSQL) \\
+\rowcolor{chuGray}
+Tables lues & \texttt{consultations}, \texttt{hospitalisations}, \texttt{patients} \\
+Tables alimentées & \texttt{FAIT\_CONSULTATION}, \texttt{FAIT\_HOSPITALISATION} \\
+\rowcolor{chuGray}
+Fréquence & Quotidienne (DAG Airflow à 02h00) \\
+Mode de chargement & Incrémental sur \texttt{date\_acte} \\
+\bottomrule
+\end{tabularx}
+\caption{Paramètres du Job 1 -- Activités cliniques}
+\label{tab:job1_params}
+\end{table}
+
+\subsection{Logique de transformation}
+
+\begin{itemize}[label=\textcolor{chuBlue}{\textbullet}]
+  \item Pseudonymisation de \texttt{id\_patient} et \texttt{id\_medecin} via \texttt{anonymize()}.
+  \item Suppression des colonnes nominatives (\texttt{nom}, \texttt{prenom}, \texttt{adresse}, \texttt{num\_secu}).
+  \item Calcul de la durée de consultation en minutes (\texttt{Heure\_fin} $-$ \texttt{Heure\_debut}).
+  \item Calcul de la durée de séjour en jours (\texttt{Date\_sortie} $-$ \texttt{Date\_entree}).
+  \item Jointure avec \texttt{DIM\_TEMPS} sur la date normalisée pour résoudre \texttt{id\_temps}.
+\end{itemize}
+
+\begin{lstlisting}[style=python, caption={Job 1 -- pseudonymisation et nettoyage des données cliniques}, label={lst:job1}]
+from etl.utils import get_engine, anonymize, log_step
+import pandas as pd
+
+def run():
+    engine_src = get_engine("operational")
+    engine_dwh = get_engine("datawarehouse")
+
+    df = pd.read_sql("SELECT * FROM consultations", engine_src)
+    log_step("Extraction", len(df))
+
+    # Pseudonymisation
+    df["id_patient"] = df["id_patient"].apply(anonymize)
+    df["id_medecin"] = df["id_medecin"].apply(anonymize)
+
+    # Suppression colonnes nominatives
+    df.drop(columns=["nom", "prenom", "adresse", "num_secu"],
+            inplace=True, errors="ignore")
+
+    # Calcul duree consultation
+    df["duree_consultation"] = (
+        pd.to_datetime(df["heure_fin"])
+        - pd.to_datetime(df["heure_debut"])
+    ).dt.total_seconds() // 60
+
+    # Nettoyage
+    df.dropna(subset=["id_patient", "code_diag", "finess"],
+              inplace=True)
+    df.drop_duplicates(inplace=True)
+
+    df.to_sql("FAIT_CONSULTATION", engine_dwh,
+              if_exists="append", index=False)
+    log_step("Chargement FAIT_CONSULTATION", len(df))
+\end{lstlisting}
+
+
+% ==================================================================
+% 4.3 PIPELINE RÉFÉRENTIEL ÉTABLISSEMENTS
+% ==================================================================
+\section{Pipeline d'intégration du référentiel des établissements}
+\label{sec:job2}
+
+\subsection{Périmètre et source}
+
+Le Job 2 traite le fichier CSV national du référentiel FINESS et alimente \texttt{DIM\_ETABLISSEMENT} ainsi que \texttt{DIM\_GEOGRAPHIE}.
+
+\begin{table}[htbp]
+\centering\footnotesize\renewcommand{\arraystretch}{1.4}
+\begin{tabularx}{\linewidth}{@{} L{3.5cm} X @{}}
+\toprule
+\rowcolor{chuBlue!15}
+\textbf{Paramètre} & \textbf{Valeur} \\
+\midrule
+Source & Fichier \texttt{etablissements.csv} (volume Bronze) \\
+\rowcolor{chuGray}
+Tables alimentées & \texttt{DIM\_ETABLISSEMENT}, \texttt{DIM\_GEOGRAPHIE} \\
+Fréquence & Hebdomadaire (lundi à 01h00) \\
+\rowcolor{chuGray}
+Mode de chargement & Rechargement complet (\texttt{replace}) \\
+\bottomrule
+\end{tabularx}
+\caption{Paramètres du Job 2 -- Référentiel des établissements}
+\label{tab:job2_params}
+\end{table}
+
+\subsection{Logique de transformation}
+
+\begin{itemize}[label=\textcolor{chuBlue}{\textbullet}]
+  \item Détection automatique de l'encodage via \texttt{chardet.detect()}.
+  \item Nettoyage des codes FINESS : suppression des espaces, rejet des codes de longueur incorrecte ($\neq$ 9 caractères).
+  \item Normalisation textuelle des noms d'établissements et de communes.
+  \item Construction de \texttt{DIM\_GEOGRAPHIE} par dédoublonnage sur \texttt{code\_region}, puis résolution de \texttt{id\_geo} par jointure.
+\end{itemize}
+
+\begin{lstlisting}[style=python, caption={Job 2 -- détection d'encodage et nettoyage FINESS}, label={lst:job2}]
+import chardet, pandas as pd
+from etl.utils import get_engine, log_step
+
+def detect_encoding(filepath: str) -> str:
+    with open(filepath, "rb") as f:
+        result = chardet.detect(f.read(100_000))
+    return result["encoding"]
+
+def run(filepath: str):
+    engine_dwh = get_engine("datawarehouse")
+
+    enc = detect_encoding(filepath)
+    df = pd.read_csv(filepath, encoding=enc, sep=";")
+    log_step("Lecture FINESS", len(df))
+
+    df["finess"] = df["finess"].str.strip().str.upper()
+    df = df[df["finess"].str.len() == 9]
+
+    # Construction DIM_GEOGRAPHIE
+    df_geo = (df[["code_region", "libelle_region"]]
+               .drop_duplicates()
+               .reset_index(drop=True))
+    df_geo["id_geo"] = df_geo.index + 1
+    df_geo.to_sql("DIM_GEOGRAPHIE", engine_dwh,
+                  if_exists="replace", index=False)
+
+    # Chargement DIM_ETABLISSEMENT
+    df = df.merge(df_geo[["code_region", "id_geo"]],
+                  on="code_region", how="left")
+    cols = ["finess", "nom", "commune",
+            "code_postal", "code_commune", "id_geo"]
+    df[cols].to_sql("DIM_ETABLISSEMENT", engine_dwh,
+                    if_exists="replace", index=False)
+    log_step("Chargement DIM_ETABLISSEMENT", len(df))
+\end{lstlisting}
+
+
+% ==================================================================
+% 4.4 PIPELINE SATISFACTION
+% ==================================================================
+\section{Pipeline de traitement des données de satisfaction}
+\label{sec:job3}
+
+\subsection{Périmètre et source}
+
+Le Job 3 traite les fichiers plats issus des campagnes e-Satis de la Haute Autorité de Santé (exercice 2020) et alimente \texttt{FAIT\_SATISFACTION}.
+
+\begin{table}[htbp]
+\centering\footnotesize\renewcommand{\arraystretch}{1.4}
+\begin{tabularx}{\linewidth}{@{} L{3.5cm} X @{}}
+\toprule
+\rowcolor{chuBlue!15}
+\textbf{Paramètre} & \textbf{Valeur} \\
+\midrule
+Source & Fichiers plats FTP (campagnes 48H et CA, HAS 2020) \\
+\rowcolor{chuGray}
+Tables alimentées & \texttt{FAIT\_SATISFACTION} \\
+Fréquence & Annuelle (chargement initial, puis mise à jour campagne) \\
+\rowcolor{chuGray}
+Mode de chargement & Rechargement complet (\texttt{replace}) \\
+\bottomrule
+\end{tabularx}
+\caption{Paramètres du Job 3 -- Satisfaction}
+\label{tab:job3_params}
+\end{table}
+
+\subsection{Logique de transformation}
+
+\begin{itemize}[label=\textcolor{chuBlue}{\textbullet}]
+  \item Lecture et parsing des fichiers plats FTP, avec détection d'encodage.
+  \item Extraction et conversion des scores textuels en valeurs numériques (\texttt{NUMERIC}).
+  \item Suppression des commentaires libres et verbatims pour éviter tout risque de réidentification indirecte.
+  \item Calcul de la moyenne des scores par établissement et par dimension d'évaluation.
+  \item Résolution des clés étrangères \texttt{finess}, \texttt{id\_temps} et \texttt{id\_geo} par jointure avec les dimensions.
+\end{itemize}
+
+\begin{lstlisting}[style=python, caption={Job 3 -- traitement des fichiers de satisfaction}, label={lst:job3}]
+import pandas as pd
+from etl.utils import get_engine, detect_encoding, log_step
+
+def run(filepath: str):
+    engine_dwh = get_engine("datawarehouse")
+
+    enc = detect_encoding(filepath)
+    df = pd.read_csv(filepath, encoding=enc, sep=";")
+    log_step("Lecture satisfaction", len(df))
+
+    # Suppression des verbatims (conformite RGPD)
+    cols_verbatim = [c for c in df.columns
+                     if "commentaire" in c.lower()
+                     or "verbatim" in c.lower()]
+    df.drop(columns=cols_verbatim, inplace=True, errors="ignore")
+
+    # Conversion des scores en numerique
+    score_cols = ["score_global", "score_accueil",
+                  "score_pec_medical", "score_pec_infirmier",
+                  "score_chambre", "score_repas", "score_sortie"]
+    for col in score_cols:
+        if col in df.columns:
+            df[col] = pd.to_numeric(
+                df[col].str.replace(",", "."), errors="coerce"
+            )
+
+    # Nettoyage et deduplication
+    df["finess"] = df["finess"].str.strip().str.upper()
+    df.dropna(subset=["finess", "score_global"], inplace=True)
+    df.drop_duplicates(
+        subset=["finess", "annee", "type_enquete"], inplace=True
+    )
+
+    # Chargement
+    df.to_sql("FAIT_SATISFACTION", engine_dwh,
+              if_exists="replace", index=False)
+    log_step("Chargement FAIT_SATISFACTION", len(df))
+\end{lstlisting}
+
+% ==================================================================
+% 4.5 PIPELINE REGISTRES DE DÉCÈS
+% ==================================================================
+\section{Pipeline de traitement des registres de décès}
+\label{sec:job4}
+
+\subsection{Périmètre et source}
+
+Le Job 4 traite les données épidémiologiques régionales issues du registre national des décès (fichier \texttt{deces.csv}, exercice 2019) et alimente la table \texttt{FAIT\_DECES}.
+
+\begin{table}[htbp]
+\centering\footnotesize\renewcommand{\arraystretch}{1.4}
+\begin{tabularx}{\linewidth}{@{} L{3.5cm} X @{}}
+\toprule
+\rowcolor{chuBlue!15}
+\textbf{Paramètre} & \textbf{Valeur} \\
+\midrule
+Source & Fichier \texttt{deces.csv} (volume Bronze, INSEE 2019) \\
+\rowcolor{chuGray}
+Tables alimentées & \texttt{FAIT\_DECES} \\
+Fréquence & Annuelle (chargement initial puis mise à jour annuelle) \\
+\rowcolor{chuGray}
+Mode de chargement & Rechargement complet (\texttt{replace}) \\
+\bottomrule
+\end{tabularx}
+\caption{Paramètres du Job 4 -- Registres de décès}
+\label{tab:job4_params}
+\end{table}
+
+\subsection{Logique de transformation}
+
+\begin{itemize}[label=\textcolor{chuBlue}{\textbullet}]
+  \item Importation et détection automatique de l'encodage du fichier source.
+  \item Contrôles de cohérence chronologique : rejet des dates de décès antérieures à la date de naissance ou postérieures à la date courante de traitement.
+  \item Agrégation des volumes à la maille région / année afin de limiter le risque de réidentification indirecte, conformément aux exigences RGPD.
+  \item Résolution des clés étrangères \texttt{id\_temps} et \texttt{id\_geo} par jointure avec \texttt{DIM\_TEMPS} et \texttt{DIM\_GEOGRAPHIE}.
+  \item Chargement en bloc dans \texttt{FAIT\_DECES} avec la valeur constante \texttt{nb\_deces = 1} par événement unitaire.
+\end{itemize}
+
+\begin{lstlisting}[style=python, caption={Job 4 -- traitement et chargement des registres de décès}, label={lst:job4}]
+import pandas as pd
+from etl.utils import get_engine, detect_encoding, log_step
+
+def run(filepath: str):
+    engine_dwh = get_engine("datawarehouse")
+
+    enc = detect_encoding(filepath)
+    df = pd.read_csv(filepath, encoding=enc, sep=";")
+    log_step("Lecture deces", len(df))
+
+    # Normalisation des dates
+    df["date_deces"] = pd.to_datetime(
+        df["date_deces"], errors="coerce", format="%Y-%m-%d"
+    )
+    df["date_naissance"] = pd.to_datetime(
+        df["date_naissance"], errors="coerce", format="%Y-%m-%d"
+    )
+
+    # Controles de coherence chronologique
+    df = df[df["date_deces"] >= df["date_naissance"]]
+    df = df[df["date_deces"] <= pd.Timestamp.today()]
+    df.dropna(subset=["date_deces", "code_region"], inplace=True)
+
+    # Agregation region / annee (conformite RGPD)
+    df["annee"] = df["date_deces"].dt.year
+    df_agg = (
+        df.groupby(["code_region", "annee", "sexe", "tranche_age"])
+          .size()
+          .reset_index(name="nb_deces")
+    )
+
+    # Jointure DIM_GEOGRAPHIE
+    df_geo = pd.read_sql(
+        "SELECT id_geo, code_region FROM DIM_GEOGRAPHIE", engine_dwh
+    )
+    df_agg = df_agg.merge(
+        df_geo, on="code_region", how="left"
+    )
+
+    # Jointure DIM_TEMPS
+    df_temps = pd.read_sql(
+        "SELECT id_temps, annee FROM DIM_TEMPS", engine_dwh
+    )
+    df_agg = df_agg.merge(df_temps, on="annee", how="left")
+
+    # Nettoyage final
+    df_agg.dropna(subset=["id_geo", "id_temps"], inplace=True)
+    df_agg.drop_duplicates(inplace=True)
+
+    # Chargement
+    df_agg.to_sql("FAIT_DECES", engine_dwh,
+                  if_exists="replace", index=False)
+    log_step("Chargement FAIT_DECES", len(df_agg))
+\end{lstlisting}
+
+\begin{infobox}[Synthèse des quatre jobs ETL]
+Les quatre pipelines couvrent l'intégralité des sources identifiées au chapitre 1 et alimentent toutes les tables de faits et dimensions du schéma décisionnel. Chaque job respecte les règles communes définies dans \texttt{etl/utils.py} : pseudonymisation HMAC-SHA256, suppression des colonnes nominatives, normalisation des dates et contrôle des doublons. L'orchestration par Apache Airflow garantit leur exécution ordonnée et leur traçabilité complète.
+\end{infobox}
+
+
+
+% ═══════════════════════════════════════════════════════════════════
+% CHAPITRE 5 — CONFORMITÉ RGPD ET SÉCURITÉ DES DONNÉES
+% ═══════════════════════════════════════════════════════════════════
+\chapter{Conformité RGPD et sécurité des données}
+
+Travailler avec des données de santé impose des contraintes qui vont bien au-delà d'une bonne architecture technique. Chaque patient dont un diagnostic, une durée d'hospitalisation ou une date de décès transite dans notre pipeline dispose de droits garantis par le RGPD. Il est de la responsabilité du groupe CHU de les respecter de manière concrète et vérifiable.
+
+Ce chapitre documente les choix mis en oeuvre pour assurer la conformité réglementaire. Il ne s'agit pas d'une liste de bonnes intentions, mais d'une description des mesures effectivement intégrées à l'architecture et aux jobs ETL de l'entrepôt décisionnel.
+
+% ==================================================================
+% 5.1 CADRE RÉGLEMENTAIRE ET ENJEUX
+% ==================================================================
+\section{Cadre réglementaire et enjeux}
+
+\subsection{L'article 9 du RGPD et nos sources de données}
+
+Les données manipulées dans ce projet (diagnostics CIM-10, causes de décès, durées d'hospitalisation, scores de satisfaction) relèvent de la catégorie des \textbf{données sensibles} définie à l'article 9 du RGPD. Leur traitement est en principe interdit, sauf à être couvert par une base légale explicite et documentée.
+
+Dans le contexte du CHU, quatre grandes familles de sources sont concernées :
+
+\begin{itemize}[label=\textcolor{chuBlue}{\textbullet}]
+  \item \textbf{Base PostgreSQL opérationnelle} : données médico-administratives de production, issues du SI hospitalier.
+  \item \textbf{Référentiel FINESS} : informations sur les établissements de santé.
+  \item \textbf{Fichiers de satisfaction} : notes et verbatims issus des enquêtes e-Satis.
+  \item \textbf{Registre des décès} : données agrégées issues des fichiers nationaux de mortalité.
+\end{itemize}
+
+\begin{table}[htbp]
+\centering\footnotesize\renewcommand{\arraystretch}{1.5}
+\begin{tabularx}{\linewidth}{@{} L{3.0cm} L{3.2cm} X @{}}
+\toprule
+\rowcolor{chuBlue!15}
+\textbf{Source} & \textbf{Base légale} & \textbf{Exemples d'usages} \\
+\midrule
+PostgreSQL soins &
+Art. 9.2.h (soins) &
+Suivi des parcours de soins, pilotage médico-économique \\
+\rowcolor{chuGray}
+Référentiel FINESS &
+Intérêt légitime / obligation légale &
+Cartographie des établissements, analyses par territoire \\
+Fichiers e-Satis &
+Art. 9.2.h / 9.2.j &
+Indicateurs d'expérience patient, qualité perçue \\
+\rowcolor{chuGray}
+Registre des décès &
+Art. 9.2.j (statistiques publiques) &
+Analyses épidémiologiques, mortalité par pathologie et région \\
+\bottomrule
+\end{tabularx}
+\caption{Sources de données et bases légales associées}
+\label{tab:rgpd_sources}
+\end{table}
+
+Trois textes nationaux complètent le RGPD et s'imposent directement au projet :
+
+\begin{itemize}[label=\textcolor{chuBlue}{\textbullet}]
+  \item \textbf{Loi Informatique et Libertés (2018)} : précise les droits des patients et les obligations des établissements hospitaliers en matière de traitement de leurs données.
+  \item \textbf{Certification HDS (Art. L.1111-8 CSP)} : rend obligatoire le recours à un hébergeur certifié pour tout stockage de données médicales personnelles. Cette certification conditionne le passage en production.
+  \item \textbf{PGSSI-S (ANS)} : fixe les exigences minimales en matière d'authentification forte, de traçabilité des accès et de gestion stricte des habilitations.
+\end{itemize}
+
+\subsection{Le risque de réidentification indirecte}
+
+Une idée reçue consiste à penser que supprimer le nom et le prénom d'un patient suffit à l'anonymiser. En pratique, la combinaison de quelques attributs en apparence anodins peut suffire à singulariser un individu. Ce risque a été formalisé par Latanya Sweeney via la notion de \emph{k-anonymat}.
+
+Dans un contexte hospitalier, certains croisements sont particulièrement sensibles :
+
+\begin{itemize}[label=\textcolor{chuBlue}{\textbullet}]
+  \item \textbf{Date de naissance précise + établissement + diagnostic rare} dans une commune de taille moyenne : ce triplet peut ne désigner qu'une seule personne.
+  \item \textbf{Cause de décès spécifique + mois + commune} : la granularité des fichiers INSEE est suffisante pour isoler des cas individuels dans des zones rurales.
+  \item \textbf{Commentaires libres de satisfaction} : un patient peut y mentionner le nom de son médecin ou la nature de son opération sans en mesurer les conséquences.
+\end{itemize}
+
+\begin{table}[htbp]
+\centering\footnotesize\renewcommand{\arraystretch}{1.5}
+\begin{tabularx}{\linewidth}{@{} L{5.0cm} X @{}}
+\toprule
+\rowcolor{chuBlue!15}
+\textbf{Risque identifié} & \textbf{Contre-mesure appliquée} \\
+\midrule
+Date de naissance précise + diagnostic rare &
+Remplacement par une tranche d'âge de 10 ans (ex. 40--49 ans) \\
+\rowcolor{chuGray}
+Détails de décès très fins (date exacte, commune) &
+Agrégation à la maille région / année avant chargement dans l'EDW \\
+Verbatims de satisfaction contenant des identifiants &
+Suppression des commentaires libres en zone Bronze, conservation de la seule note numérique \\
+\rowcolor{chuGray}
+Croisements sur de petits effectifs ($<$ 10 personnes) &
+Interdiction des requêtes analytiques trop fines, restriction à des groupes d'au moins 10 individus \\
+\bottomrule
+\end{tabularx}
+\caption{Contre-mesures appliquées pour limiter la réidentification indirecte}
+\label{tab:reidentification}
+\end{table}
+
+\clearpage
+
+% ==================================================================
+% 5.2 SÉCURITÉ DE L'INFRASTRUCTURE DOCKER
+% ==================================================================
+\section{Sécurité de l'infrastructure Docker}
+
+\subsection{Isolation réseau par zone}
+
+Par défaut, tous les conteneurs Docker d'un même projet peuvent communiquer librement. Dès lors que l'on mélange des données brutes nominatives et des outils de visualisation accessibles aux utilisateurs finaux, ce fonctionnement est inacceptable.
+
+Le fichier \texttt{docker-compose.yml} définit trois réseaux logiques distincts, alignés sur les zones Bronze, Silver et Gold :
+
+\begin{table}[htbp]
+\centering\footnotesize\renewcommand{\arraystretch}{1.5}
+\begin{tabularx}{\linewidth}{@{} L{3.2cm} L{2.0cm} X @{}}
+\toprule
+\rowcolor{chuBlue!15}
+\textbf{Réseau} & \textbf{Type} & \textbf{Services rattachés} \\
+\midrule
+\texttt{net\_bronze} & \texttt{internal} &
+PostgreSQL opérationnel, volumes de dumps bruts, collecteurs FTP \\
+\rowcolor{chuGray}
+\texttt{net\_silver} & Pont interne &
+Conteneur ETL Python, Apache Airflow, volumes de staging \\
+\texttt{net\_gold} & Pont exposé &
+Schéma \texttt{datawarehouse} PostgreSQL, Metabase \\
+\bottomrule
+\end{tabularx}
+\caption{Réseaux Docker et services rattachés par zone}
+\label{tab:docker_networks}
+\end{table}
+
+Le réseau \texttt{net\_bronze} est déclaré avec l'option \texttt{internal: true} dans le \texttt{docker-compose.yml}. Aucun flux entrant ou sortant depuis l'hôte n'est possible, ce qui empêche tout utilisateur d'interroger directement les données brutes en dehors des jobs prévus. Metabase se trouve physiquement dans un réseau différent de PostgreSQL opérationnel et ne peut pas l'atteindre, même en cas de mauvaise configuration au niveau applicatif.
+
+\begin{figure}[H]
+  \centering
+  \resizebox{0.95\textwidth}{!}{%
+    \begin{tikzpicture}[
+        box/.style={rectangle, rounded corners=4pt, draw=#1, thick,
+                    fill=#1!10, minimum width=3.8cm, minimum height=0.7cm,
+                    font=\footnotesize\bfseries, align=center},
+        netbox/.style={rectangle, rounded corners=6pt, dashed,
+                       draw=#1, thick, fill=#1!4, inner sep=8pt},
+        arrow/.style={-stealth, thick, color=chuLightBlue},
+        lbl/.style={font=\small\bfseries, color=#1}
+      ]
+
+      % ── Contenus Zone Bronze ──────────────────────────────────────
+      \node[box=bronze] (pgop)  at (0, 0.5)  {PostgreSQL\\\texttt{operational}};
+      \node[box=bronze] (vol)   at (0,-0.5)  {Volumes dumps\\et fichiers bruts};
+
+      % ── Contenus Zone Silver ─────────────────────────────────────
+      \node[box=chuAccent] (etl) at (5.5, 0.5) {Conteneur ETL\\Python};
+      \node[box=chuAccent] (air) at (5.5,-0.5) {Apache Airflow\\(orchestrateur)};
+
+      % ── Contenus Zone Gold ───────────────────────────────────────
+      \node[box=gold]     (pgdwh) at (11, 0.5) {PostgreSQL\\\texttt{datawarehouse}};
+      \node[box=chuBlue]  (meta)  at (11,-0.5) {Metabase\\BI};
+
+      % ── Encadrés réseaux (dessinés autour des nœuds) ─────────────
+      \begin{scope}[on background layer]
+        \node[netbox=bronze,
+              fit=(pgop)(vol),
+              label={[lbl=bronze!80!black]above:\small Réseau \texttt{net\_bronze} (internal)}
+             ] (nbronze) {};
+
+        \node[netbox=chuAccent,
+              fit=(etl)(air),
+              label={[lbl=chuAccent!80!black]above:\small Réseau \texttt{net\_silver}}
+             ] (nsilver) {};
+
+        \node[netbox=gold,
+              fit=(pgdwh)(meta),
+              label={[lbl=gold!80!black]above:\small Réseau \texttt{net\_gold}}
+             ] (ngold) {};
+      \end{scope}
+
+      % ── Flèches entre réseaux ────────────────────────────────────
+      \draw[arrow] (nbronze.east) --
+            node[above, font=\scriptsize]{Lecture} (nsilver.west);
+      \draw[arrow] (nsilver.east) --
+            node[above, font=\scriptsize]{Chargement} (ngold.west);
+
+    \end{tikzpicture}%
+  }
+  \caption{Architecture Docker et flux inter-conteneurs}
+  \label{fig:docker_networks}
+\end{figure}
+
+\subsection{Séparation des privilèges en base de données}
+
+En complément du cloisonnement réseau, les droits en base sont segmentés par rôle. Trois rôles PostgreSQL ont été définis :
+
+\begin{itemize}[label=\textcolor{chuBlue}{\textbullet}]
+  \item \textbf{\texttt{role\_etl}} : accès \texttt{SELECT} sur le schéma \texttt{operational} uniquement, utilisé par les scripts Python pour l'extraction nocturne.
+  \item \textbf{\texttt{role\_metabase}} : accès \texttt{SELECT} sur le seul schéma \texttt{datawarehouse}, via des vues ne retournant que des agrégats (\texttt{COUNT}, \texttt{AVG}).
+  \item \textbf{\texttt{role\_admin}} : accès complet réservé au DBA, protégé par authentification forte (MFA), jamais utilisé dans les traitements automatiques.
+\end{itemize}
+
+Concrètement, même si les identifiants Metabase étaient exfiltrés, un attaquant ne pourrait jamais accéder aux données nominatives ni aux tables opérationnelles.
+
+
+% ==================================================================
+% 5.3 TECHNIQUES DE PROTECTION DANS LES JOBS ETL
+% ==================================================================
+\section{Techniques de protection dans les jobs ETL}
+
+\subsection{Pseudonymisation HMAC-SHA256 tronqué}
+
+Un simple hachage SHA-256 de l'identifiant patient ne suffit pas. Les numéros de séjour ou de sécurité sociale vivent dans un espace de valeurs limité et prévisible, ce qui rend une attaque par dictionnaire relativement simple.
+
+Le projet CHU utilise donc un \textbf{HMAC-SHA256} avec les propriétés suivantes :
+
+\begin{itemize}[label=\textcolor{chuBlue}{\textbullet}]
+  \item Le hachage est calculé avec une clé secrète externe (\texttt{HASH\_SECRET\_KEY}).
+  \item La sortie est tronquée à 16 caractères pour limiter la taille des colonnes.
+  \item Sans la clé HMAC, il est pratiquement impossible de reconstruire l'identifiant d'origine.
+\end{itemize}
+
+\begin{lstlisting}[style=python, caption={Pseudonymisation HMAC-SHA256 dans le module ETL}, label={lst:hmac}]
+import hashlib, hmac, os
+
+SECRET_KEY = os.getenv("HASH_SECRET_KEY", "")
+
+def anonymize(value: str) -> str:
+    """Pseudonymise un identifiant par HMAC-SHA256 tronque a 16 cars."""
+    digest = hmac.new(
+        SECRET_KEY.encode(), str(value).encode(), hashlib.sha256
+    ).hexdigest()
+    return digest[:16]
+\end{lstlisting}
+
+Ce traitement est appliqué systématiquement à \texttt{id\_patient}, \texttt{id\_medecin} et \texttt{id\_prescripteur} avant toute sortie de la zone Bronze vers la zone Silver. La clé \texttt{HASH\_SECRET\_KEY} fait l'objet d'une rotation tous les 90 jours.
+
+\subsection{Aucune donnée nominative au-delà de la zone Bronze}
+
+Il s'agit d'une règle de construction, pas d'une convention de bonne conduite. Les champs suivants ne sont jamais mappés dans les schémas cibles des jobs ETL :
+
+\begin{itemize}[label=\textcolor{chuBlue}{\textbullet}]
+  \item \texttt{nom}, \texttt{prenom}, \texttt{adresse\_exacte}, \texttt{num\_secu} pour les patients.
+  \item Coordonnées personnelles des praticiens.
+  \item Tout identifiant libre pouvant contenir des informations sensibles (commentaires, notes internes, verbatims).
+\end{itemize}
+
+Ces colonnes n'existent tout simplement pas dans les tables de l'entrepôt décisionnel. Un composant de contrôle vérifie à chaque exécution de pipeline que ces colonnes interdites sont absentes du schéma de sortie. En cas d'échec, le job s'arrête et une alerte est envoyée à l'administrateur ETL.
+
+\begin{warningbox}[Contrôle automatique des colonnes interdites]
+Un test systématique est exécuté en fin de transformation pour vérifier l'absence de toute colonne nominative dans le schéma de sortie. Ce contrôle bloque le déploiement de tout pipeline non conforme et déclenche une alerte immédiate.
+\end{warningbox}
+
+\subsection{Gestion des secrets via fichiers \texttt{.env} et coffre-fort}
+\label{subsec:gestion-secrets}
+
+Tous les identifiants de bases de données, la clé HMAC et les identifiants FTP sont externalisés dans un fichier \texttt{.env} exclu du dépôt Git. En environnement de développement, les variables sont chargées localement via Docker Compose.
+
+En environnement de production, ce fichier est remplacé par une intégration HashiCorp Vault. Les secrets sont injectés dans les conteneurs au démarrage via le mécanisme de \emph{Docker Secrets}, sans jamais transiter en clair sur le système hôte ni dans les variables d'environnement du système.
+
+\begin{table}[htbp]
+\centering\footnotesize\renewcommand{\arraystretch}{1.5}
+\begin{tabularx}{\linewidth}{@{} L{3.5cm} L{3.0cm} X @{}}
+\toprule
+\rowcolor{chuBlue!15}
+\textbf{Secret} & \textbf{Stockage} & \textbf{Modalités} \\
+\midrule
+Identifiants PostgreSQL &
+Fichier \texttt{.env} / Vault &
+Injectés via Docker Compose en dev, Docker Secrets en prod \\
+\rowcolor{chuGray}
+Clé HMAC (\texttt{HASH\_SECRET\_KEY}) &
+Fichier \texttt{.env} / Vault &
+Rotation obligatoire tous les 90 jours \\
+Identifiants FTP &
+Fichier \texttt{.env} / Vault &
+Jamais en clair dans le code source ni dans les logs \\
+\rowcolor{chuGray}
+Identifiants Metabase &
+Fichier \texttt{.env} &
+Compte dédié en lecture seule sur \texttt{datawarehouse} uniquement \\
+\bottomrule
+\end{tabularx}
+\caption{Gestion des secrets par type et environnement}
+\label{tab:secrets}
+\end{table}
+
+\clearpage
+
+% ==================================================================
+% 5.4 GOUVERNANCE DES DONNÉES
+% ==================================================================
+\section{Gouvernance des données}
+\label{sec:registre-traitements}
+
+\subsection{Registre des traitements (Article 30)}
+\label{sec:registre-art30}
+
+L'article 30 du RGPD impose de documenter chaque traitement de données personnelles. Le tableau ci-dessous présente le registre minimal pour l'entrepôt de données du CHU.
+
+\begin{table}[htbp]
+\centering\footnotesize\renewcommand{\arraystretch}{1.5}
+\begin{tabularx}{\linewidth}{@{} L{4.0cm} X @{}}
+\toprule
+\rowcolor{chuBlue!15}
+\textbf{Champ} & \textbf{Valeur} \\
+\midrule
+Responsable de traitement &
+Groupe CHU -- Direction des Systèmes d'Information \\
+\rowcolor{chuGray}
+DPO &
+À désigner avant mise en production (art. 37 -- obligatoire pour un établissement de santé) \\
+Finalité &
+Analyse décisionnelle : suivi des consultations, hospitalisations, décès et satisfaction \\
+\rowcolor{chuGray}
+Base légale &
+Art. 9.2.h (soins), Art. 9.2.j (statistiques de santé publique) \\
+Personnes concernées &
+Patients hospitalisés ou en consultation dans les établissements du groupe CHU \\
+\rowcolor{chuGray}
+Données traitées &
+Données de santé pseudonymisées (diagnostics, séjours, décès, satisfaction) \\
+Destinataires &
+Praticiens, chefs d'établissement, analystes autorisés \\
+\rowcolor{chuGray}
+Conservation EDW &
+10 ans maximum (Art. R.1112-7 CSP) \\
+Conservation ODS &
+30 jours glissants, puis purge automatique \\
+\rowcolor{chuGray}
+Conservation logs &
+1 an (journaux d'accès et d'exécution des pipelines) \\
+Transferts hors UE &
+Aucun \\
+\rowcolor{chuGray}
+Mesures de sécurité &
+Chiffrement AES-256 au repos, TLS 1.3 en transit, RBAC, HMAC-SHA256, audit trail (pgaudit) \\
+\bottomrule
+\end{tabularx}
+\caption{Registre synthétique des traitements (Article 30 RGPD)}
+\label{tab:registre_art30}
+\end{table}
+
+\subsection{Politique Git : données réelles interdites dans le dépôt}
+
+Les jeux de données utilisés en développement et en test sont strictement synthétiques, générés avec la bibliothèque \texttt{Faker}. Ils sont structurellement identiques aux données réelles mais ne font référence à aucun patient existant.
+
+Trois mécanismes techniques renforcent cette politique :
+
+\begin{itemize}[label=\textcolor{chuBlue}{\textbullet}]
+  \item Le fichier \texttt{.gitignore} exclut systématiquement les fichiers \texttt{.env}, \texttt{.csv}, \texttt{.parquet}, \texttt{.json}, \texttt{.key} et \texttt{.pem}.
+  \item Un hook \texttt{pre-commit} basé sur \texttt{gitleaks} bloque tout commit contenant des patterns caractéristiques de données sensibles (numéros de sécurité sociale, mots de passe, clés API).
+  \item La branche \texttt{main} est protégée : tout job ETL touchant à la pseudonymisation ou aux schémas de données passe obligatoirement par une pull request avec revue par un second membre de l'équipe avant merge.
+\end{itemize}
+
+\subsection{Analyse d'impact (DPIA) et droits des patients}
+
+Une Analyse d'Impact relative à la Protection des Données (DPIA, article 35) est obligatoire avant la mise en production. Le projet remplit deux critères déclencheurs :
+
+\begin{itemize}[label=\textcolor{chuBlue}{\textbullet}]
+  \item Traitement à grande échelle de données de santé.
+  \item Évaluation systématique de personnes (indicateurs de performance, scores de satisfaction).
+\end{itemize}
+
+La DPIA sera conduite en cinq étapes : description du traitement, démonstration de sa nécessité, analyse des risques, présentation des mesures prévues et validation par le DPO. En cas de risques résiduels élevés, une consultation préalable de la CNIL sera envisagée.
+
+Sur les droits des patients (articles 15 à 22), les procédures techniques prévues sont les suivantes :
+
+\begin{itemize}[label=\textcolor{chuBlue}{\textbullet}]
+  \item \textbf{Droit d'accès} : la réidentification ponctuelle se fait via la clé HMAC, accessible uniquement au DPO ou à une personne dûment habilitée.
+  \item \textbf{Rectification et effacement} : effectués par script ciblé sur l'identifiant pseudonymisé, avec propagation en cascade dans les tables de faits et dimensions concernées.
+  \item \textbf{Opposition} : l'identifiant pseudonymisé est inscrit dans une table d'exclusion, filtrée systématiquement par toutes les requêtes analytiques.
+\end{itemize}
+\clearpage
+
+\subsection{Synthèse opérationnelle des mesures en place}
+
+\begin{infobox}[Résumé des mesures de conformité effectivement implémentées]
+\begin{itemize}[leftmargin=0.8cm, label=\textcolor{chuBlue}{\textbullet}]
+  \item Base légale documentée pour chaque source de données.
+  \item Agrégation des données de décès à la maille région / année, suppression des verbatims de satisfaction dès la zone Bronze.
+  \item Architecture conteneurisée sur trois réseaux Docker cloisonnés (\texttt{net\_bronze}, \texttt{net\_silver}, \texttt{net\_gold}).
+  \item Metabase sans accès physique ni logique aux données brutes ou au schéma \texttt{operational}.
+  \item Pseudonymisation systématique par HMAC-SHA256 tronqué à 16 caractères, mur Bronze infranchissable par construction.
+  \item Gestion des secrets via fichiers \texttt{.env} non versionnés et HashiCorp Vault en production, rotation des clés tous les 90 jours.
+  \item Politique Git stricte : données réelles interdites, \texttt{gitleaks} en \texttt{pre-commit}, revue obligatoire des jobs ETL sensibles.
+  \item Registre des traitements (article 30) tenu et DPIA à conduire avant passage en production.
+  \item DPO à nommer avant mise en production (obligation légale pour tout établissement de santé).
+\end{itemize}
+\end{infobox}
+
+
+% ═══════════════════════════════════════════════════════════════════
+% CHAPITRE 6 — SYNTHÈSE ET PERSPECTIVES
+% ═══════════════════════════════════════════════════════════════════
+\chapter{Synthèse et perspectives}
+
+Ce premier livrable pose les fondations conceptuelles et techniques du système décisionnel du groupe CHU. Il formalise les choix d'architecture, documente le modèle dimensionnel, spécifie les pipelines ETL et statue sur la conformité réglementaire. Ce chapitre en dresse le bilan et ouvre sur les étapes suivantes.
+
+% ==================================================================
+% 6.1 BILAN DU RÉFÉRENTIEL DE DONNÉES ÉTABLI
+% ==================================================================
+\section{Bilan du référentiel de données établi}
+
+Le passage d'une architecture lourde (Hadoop, Talend) à une stack moderne et conteneurisée (Docker, Python, PostgreSQL) dote le groupe CHU d'un environnement décisionnel performant, économique et respectueux des standards de confidentialité exigés dans le secteur de la santé.
+
+Les éléments suivants ont été validés dans ce livrable :
+
+\begin{itemize}[label=\textcolor{chuBlue}{\textbullet}]
+  \item \textbf{Architecture} : un pattern en médaillon trois zones (Bronze, Silver, Gold) intégralement conteneurisé sous Docker, avec un cloisonnement réseau et une séparation des privilèges alignés sur les exigences RGPD.
+  \item \textbf{Modèle décisionnel} : un schéma en constellation composé de quatre tables de faits spécialisées (\texttt{FAIT\_CONSULTATION}, \texttt{FAIT\_HOSPITALISATION}, \texttt{FAIT\_DECES}, \texttt{FAIT\_SATISFACTION}) et six dimensions conformes partagées.
+  \item \textbf{Pipelines ETL} : quatre scripts Python modulaires couvrant l'intégralité des sources identifiées, avec pseudonymisation systématique, suppression des colonnes nominatives et contrôles de qualité automatisés.
+  \item \textbf{Conformité RGPD} : base légale documentée pour chaque source, pseudonymisation HMAC-SHA256, registre des traitements tenu, DPIA planifiée avant mise en production.
+\end{itemize}
+
+\begin{table}[htbp]
+\centering\footnotesize\renewcommand{\arraystretch}{1.5}
+\begin{tabularx}{\linewidth}{@{} L{4.0cm} L{3.5cm} X @{}}
+\toprule
+\rowcolor{chuBlue!15}
+\textbf{Composant} & \textbf{Statut} & \textbf{Commentaire} \\
+\midrule
+Architecture médaillon & Validée & Trois zones Docker cloisonnées, IaC via \texttt{docker-compose.yml} \\
+\rowcolor{chuGray}
+Modèle en constellation & Validé & Quatre tables de faits, six dimensions conformes \\
+Pipelines ETL Python & Spécifiés & Quatre jobs couvrant toutes les sources Bronze \\
+\rowcolor{chuGray}
+Conformité RGPD & En cours & Registre tenu, DPIA et DPO à finaliser avant production \\
+Restitution Metabase & Prévue & Connexion en lecture seule au schéma \texttt{datawarehouse} \\
+\bottomrule
+\end{tabularx}
+\caption{Tableau de bord de validation du Livrable 1}
+\label{tab:bilan_l1}
+\end{table}
+
+Le modèle dimensionnel répond avec exactitude aux huit indicateurs décisionnels formulés au chapitre 1 : volumes de consultations, durées de séjour, taux de mortalité par région, scores de satisfaction par établissement.
+
+% ==================================================================
+% 6.2 LIMITES DE LA SOLUTION PROPOSÉE
+% ==================================================================
+\section{Limites de la solution proposée}
+
+La solution retenue est adaptée au périmètre régional et interrégional du groupe CHU dans le cadre de ce livrable. Elle présente néanmoins des limites à prendre en compte pour les phases suivantes :
+
+\begin{itemize}[label=\textcolor{chuBlue}{\textbullet}]
+  \item \textbf{Volumétrie} : la bibliothèque \texttt{pandas} traite les données en mémoire vive. Au-delà de quelques dizaines de millions de lignes, les temps de traitement des jobs ETL augmentent significativement et peuvent dépasser les fenêtres batch disponibles.
+  \item \textbf{Hébergement local} : l'architecture actuelle repose sur une infrastructure Docker locale. En environnement de production hospitalière, le recours à un hébergeur certifié HDS est obligatoire, ce qui implique une migration et un audit de conformité.
+  \item \textbf{Traitement temps réel} : l'architecture est orientée batch. Elle ne couvre pas les besoins de flux en temps réel, par exemple pour des alertes cliniques ou des indicateurs de tension hospitalière en temps continu.
+  \item \textbf{Gestion des SCD} : la gestion des \emph{Slowly Changing Dimensions} de type 2 (historisation des changements structurels comme les fusions d'établissements) est prévue dans le code mais n'est pas encore implémentée dans les jobs ETL.
+\end{itemize}
+
+% ==================================================================
+% 6.3 TRANSITION VERS LES ÉTAPES SUIVANTES
+% ==================================================================
+\section{Transition vers les étapes suivantes}
+
+\begin{infobox}[Ouverture vers le Livrable 2]
+Le prochain livrable s'attachera à l'optimisation physique et à la mise en exploitation de l'architecture définie dans ce document :
+
+\begin{itemize}[leftmargin=0.8cm, label=\textcolor{chuBlue}{\textbullet}]
+  \item Implémentation complète des scripts DDL dans PostgreSQL (création des schémas, contraintes, index).
+  \item Stratégies de partitionnement temporel sur \texttt{DIM\_TEMPS} et d'indexation B-Tree sur les clés étrangères des tables de faits.
+  \item Mesure et optimisation des temps d'exécution des requêtes analytiques complexes (plans d'exécution, \texttt{EXPLAIN ANALYZE}).
+  \item Configuration avancée des tableaux de bord Metabase et mise en place des droits d'accès par profil utilisateur.
+  \item Implémentation des SCD de type 2 sur les dimensions \texttt{DIM\_ETABLISSEMENT} et \texttt{DIM\_PROFESSIONNEL}.
+\end{itemize}
+\end{infobox}
+
+\clearpage
+
+% ═══════════════════════════════════════════════════════════════════
+% GLOSSAIRE
+% ═══════════════════════════════════════════════════════════════════
+\chapter*{Glossaire}
+\addcontentsline{toc}{chapter}{Glossaire}
+
+\begin{description}[leftmargin=3.5cm, style=nextline, font=\bfseries\color{chuBlue}]
+
+  \item[Architecture en médaillon]
+  Pattern d'organisation des données en trois zones successives (Bronze, Silver, Gold), chacune correspondant à un niveau de maturité croissant de la donnée : ingestion brute, intégration et qualité, exposition analytique.
+
+  \item[Bronze (zone)]
+  Première couche de l'architecture en médaillon. Elle stocke les données brutes telles qu'elles sont reçues des sources, sans transformation, afin de garantir la traçabilité et la possibilité de rejouer les traitements.
+
+  \item[Bus architecture]
+  Concept de Ralph Kimball désignant le partage de dimensions conformes entre plusieurs datamarts, assurant la cohérence des analyses croisées.
+
+  \item[CIM-10]
+  Classification Internationale des Maladies, 10\up{e} révision. Nomenclature médicale internationale utilisée pour coder les diagnostics et causes de décès.
+
+  \item[Constellation (schéma en)]
+  Modèle décisionnel composé de plusieurs tables de faits autonomes partageant un ensemble commun de dimensions conformes. Adapté aux environnements où coexistent plusieurs processus métiers distincts.
+
+  \item[DAG (Directed Acyclic Graph)]
+  Graphe orienté acyclique utilisé par Apache Airflow pour représenter les dépendances entre les tâches d'un pipeline ETL.
+
+  \item[Datamart]
+  Sous-ensemble thématique d'un entrepôt de données, orienté vers un domaine métier précis (hospitalisations, satisfaction, décès, etc.).
+
+  \item[Dimension]
+  Table du modèle décisionnel fournissant les axes contextuels d'analyse (temps, patient, établissement, diagnostic, etc.). Les dimensions sont dénormalisées pour optimiser les performances des requêtes analytiques.
+
+  \item[DPIA]
+  \textit{Data Protection Impact Assessment} (Analyse d'Impact relative à la Protection des Données). Étude obligatoire avant tout traitement à grande échelle de données sensibles, définie à l'article 35 du RGPD.
+
+  \item[DPO]
+  \textit{Data Protection Officer} (Délégué à la Protection des Données). Rôle obligatoire dans les établissements de santé, chargé de veiller au respect du RGPD.
+
+  \item[EDW]
+  \textit{Enterprise Data Warehouse}. Entrepôt de données d'entreprise consolidant l'ensemble des sources de données d'une organisation à des fins d'analyse décisionnelle.
+
+  \item[ETL]
+  \textit{Extract, Transform, Load}. Processus d'extraction des données depuis les sources, de transformation selon les règles métier, et de chargement dans l'entrepôt décisionnel.
+
+  \item[FINESS]
+  Fichier National des Établissements Sanitaires et Sociaux. Référentiel national identifiant chaque structure de soins par un numéro unique (code FINESS).
+
+  \item[Gold (zone)]
+  Troisième couche de l'architecture en médaillon. Elle héberge le modèle décisionnel structuré (tables de faits et dimensions) prêt à être interrogé par les outils de BI.
+
+  \item[HDS]
+  Hébergement de Données de Santé. Certification obligatoire en France pour tout prestataire hébergeant des données médicales personnelles (Art. L.1111-8 du Code de la Santé Publique).
+
+  \item[HMAC-SHA256]
+  \textit{Hash-based Message Authentication Code} utilisant l'algorithme SHA-256. Technique de pseudonymisation combinant un hachage cryptographique avec une clé secrète externe, rendant le résultat irréversible sans cette clé.
+
+  \item[IaC]
+  \textit{Infrastructure as Code}. Pratique consistant à décrire et provisionner l'infrastructure informatique via des fichiers de configuration versionnés (ex. \texttt{docker-compose.yml}).
+
+  \item[k-anonymat]
+  Propriété d'un jeu de données garantissant que chaque individu ne peut pas être distingué d'au moins $k-1$ autres individus sur la base des attributs quasi-identifiants disponibles.
+
+  \item[Kimball (modèle de)]
+  Méthodologie de modélisation décisionnelle proposée par Ralph Kimball, reposant sur le schéma en étoile et les dimensions dénormalisées pour optimiser les analyses métier.
+
+  \item[ODS]
+  \textit{Operational Data Store}. Zone de stockage intermédiaire contenant les données intégrées et nettoyées, servant de socle à l'alimentation de l'entrepôt décisionnel.
+
+  \item[OLAP]
+  \textit{Online Analytical Processing}. Traitement analytique en ligne permettant d'interroger rapidement de grands volumes de données selon plusieurs dimensions.
+
+  \item[PGSSI-S]
+  Politique Générale de Sécurité des Systèmes d'Information de Santé. Référentiel publié par l'ANS (Agence du Numérique en Santé) définissant les exigences minimales de sécurité pour les SI de santé.
+
+  \item[Pseudonymisation]
+  Technique de protection des données consistant à remplacer les identifiants directs par des identifiants de substitution, de telle sorte que la réidentification ne soit possible qu'avec une information complémentaire détenue séparément.
+
+  \item[RBAC]
+  \textit{Role-Based Access Control}. Modèle de contrôle d'accès dans lequel les droits sont attribués à des rôles, et les utilisateurs héritent des droits du rôle qui leur est assigné.
+
+  \item[RGPD]
+  Règlement Général sur la Protection des Données. Texte fondateur du droit européen en matière de protection des données personnelles, entré en vigueur le 25 mai 2018.
+
+  \item[SCD (Slowly Changing Dimension)]
+  Dimension évoluant lentement dans le temps. Le type 2 consiste à conserver l'historique complet en créant une nouvelle ligne à chaque changement, avec des dates de validité.
+
+  \item[Silver (zone)]
+  Deuxième couche de l'architecture en médaillon. Elle réalise les transformations ETL : nettoyage, normalisation des référentiels, contrôles de qualité et pseudonymisation des données sensibles.
+
+  \item[Surrogate key]
+  Clé de substitution technique (entier auto-incrémenté) utilisée dans les dimensions du modèle décisionnel pour découpler l'entrepôt des identifiants opérationnels.
+
+\end{description}
+
+\clearpage
+
+% ═══════════════════════════════════════════════════════════════════
+% TABLE DES FIGURES
+% ═══════════════════════════════════════════════════════════════════
+\listoffigures
+\addcontentsline{toc}{chapter}{Table des figures}
+
+\clearpage
+
+% ═══════════════════════════════════════════════════════════════════
+% LISTE DES TABLEAUX
+% ═══════════════════════════════════════════════════════════════════
+\listoftables
+\addcontentsline{toc}{chapter}{Liste des tableaux}
+
+\clearpage
+
+% ═══════════════════════════════════════════════════════════════════
+% ANNEXES (à compléter)
+% ═══════════════════════════════════════════════════════════════════
+\appendix
+\chapter{Mapping technologique détaillé}
+
+Le tableau suivant récapitule la correspondance complète entre les outils initialement prévus dans le cahier des charges et les composants effectivement retenus dans l'architecture Docker.
+
+\begin{table}[htbp]
+\centering\footnotesize\renewcommand{\arraystretch}{1.5}
+\begin{tabularx}{\linewidth}{@{} L{3.0cm} L{3.2cm} L{2.5cm} X @{}}
+\toprule
+\rowcolor{chuBlue!15}
+\textbf{Outil initial} & \textbf{Équivalent retenu} & \textbf{Zone} & \textbf{Justification} \\
+\midrule
+HDFS & Volumes Docker & Bronze &
+Stockage brut léger, persistant et versionnable sans cluster distribué \\
+\rowcolor{chuGray}
+Talend Open Studio & Scripts Python (pandas) & Silver &
+Flexibilité du code, traçabilité RGPD, versionnement Git natif \\
+PostgreSQL opérationnel & PostgreSQL (\texttt{operational}) & Bronze &
+Réplication du SI hospitalier, extraction SQL directe \\
+\rowcolor{chuGray}
+Hive & PostgreSQL (\texttt{datawarehouse}) & Gold &
+Performances OLAP suffisantes sur ce volume, sans cluster Hadoop \\
+PowerBI / Superset & Metabase & BI &
+Légèreté, déploiement Docker, accès web sans licence propriétaire \\
+\rowcolor{chuGray}
+Hadoop / MapReduce & Docker + Python & Silver &
+Consommation de ressources 20 à 60 fois inférieure à une VM Hadoop \\
+\bottomrule
+\end{tabularx}
+\caption{Mapping complet entre stack initiale et architecture retenue}
+\label{tab:mapping_annexe}
+\end{table}
+
+\clearpage
+
+% ─────────────────────────────────────────────────────────────────
+\chapter{Registre complet des tables du schéma \texttt{datawarehouse}}
+
+Le tableau suivant liste l'ensemble des tables du schéma décisionnel, leur type et leur rôle dans le modèle en constellation.
+
+\begin{table}[htbp]
+\centering\footnotesize\renewcommand{\arraystretch}{1.5}
+\begin{tabularx}{\linewidth}{@{} L{4.5cm} L{2.5cm} X @{}}
+\toprule
+\rowcolor{chuBlue!15}
+\textbf{Nom de la table} & \textbf{Type} & \textbf{Rôle} \\
+\midrule
+\texttt{FAIT\_CONSULTATION} & Table de faits &
+Mesures des actes ambulatoires (durée, volume, liens vers dimensions) \\
+\rowcolor{chuGray}
+\texttt{FAIT\_HOSPITALISATION} & Table de faits &
+Mesures des séjours hospitaliers (durée de séjour, volume) \\
+\texttt{FAIT\_DECES} & Table de faits &
+Dénombrement des décès par région, période, tranche d'âge et sexe \\
+\rowcolor{chuGray}
+\texttt{FAIT\_SATISFACTION} & Table de faits &
+Scores e-Satis par établissement, campagne et dimension d'évaluation \\
+\texttt{DIM\_TEMPS} & Dimension &
+Axe temporel (jour, mois, trimestre, année) \\
+\rowcolor{chuGray}
+\texttt{DIM\_PATIENT} & Dimension &
+Profil pseudonymisé des patients (sexe, tranche d'âge, commune) \\
+\texttt{DIM\_ETABLISSEMENT} & Dimension &
+Référentiel FINESS des structures de soins \\
+\rowcolor{chuGray}
+\texttt{DIM\_DIAGNOSTIC} & Dimension &
+Nomenclature CIM-10 des pathologies \\
+\texttt{DIM\_PROFESSIONNEL} & Dimension &
+Praticiens par spécialité (RPPS / ADELI) \\
+\rowcolor{chuGray}
+\texttt{DIM\_GEOGRAPHIE} & Dimension &
+Découpage régional pour les analyses macro \\
+\bottomrule
+\end{tabularx}
+\caption{Inventaire des tables du schéma \texttt{datawarehouse}}
+\label{tab:inventaire_tables}
+\end{table}
+
+\clearpage
+
+% ─────────────────────────────────────────────────────────────────
+% ─────────────────────────────────────────────────────────────────
+\chapter{Politique de qualité des données}
+
+Les contrôles de qualité appliqués dans les pipelines ETL sont résumés dans le tableau ci-dessous.
+
+\begin{table}[htbp]
+\centering\footnotesize\renewcommand{\arraystretch}{1.5}
+\begin{tabularx}{\linewidth}{@{} L{3.5cm} L{3.0cm} X @{}}
+\toprule
+\rowcolor{chuBlue!15}
+\textbf{Règle de qualité} & \textbf{Méthode Python} & \textbf{Application} \\
+\midrule
+Normalisation des dates &
+\texttt{pd.to\_datetime(..., errors='coerce')} &
+Tous les pipelines, toutes les colonnes de type date \\
+\rowcolor{chuGray}
+Suppression des doublons &
+\texttt{drop\_duplicates(subset=[...])} &
+Avant tout chargement en Gold, sur la clé fonctionnelle \\
+Valeurs nulles sur FK &
+\texttt{dropna(subset=[...])} &
+Rejet des lignes dont une clé étrangère est absente \\
+\rowcolor{chuGray}
+Détection d'encodage &
+\texttt{chardet.detect()} &
+Fichiers CSV FINESS, satisfaction, décès \\
+Colonnes nominatives interdites &
+\texttt{drop(columns=[...])} &
+Job 1, avant tout chargement hors zone Bronze \\
+\rowcolor{chuGray}
+Pseudonymisation &
+\texttt{anonymize()} (HMAC-SHA256) &
+\texttt{id\_patient}, \texttt{id\_medecin}, \texttt{id\_prescripteur} \\
+Cohérence chronologique &
+Filtrage conditionnel pandas &
+Job 4 : rejet des décès antérieurs à la naissance \\
+\rowcolor{chuGray}
+Agrégation anti-réidentification &
+\texttt{groupby([région, année])} &
+Job 4 : aucun enregistrement individuel dans \texttt{FAIT\_DECES} \\
+\bottomrule
+\end{tabularx}
+\caption{Règles de qualité des données appliquées dans les pipelines ETL}
+\label{tab:qualite_donnees}
+\end{table}
+% ═══════════════════════════════════════════════════════════════════
+% FIN DU DOCUMENT
+% ═══════════════════════════════════════════════════════════════════
+\end{document}

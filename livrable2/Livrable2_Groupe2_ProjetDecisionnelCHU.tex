@@ -1,0 +1,1209 @@
+\documentclass[12pt,a4paper]{report}
+
+% ─── Encodage & langue ────────────────────────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{lmodern}
+
+% ─── Mise en page ─────────────────────────────────────────────────────────────
+\usepackage{geometry}
+\geometry{top=2.5cm, bottom=2.5cm, left=2.8cm, right=2.8cm}
+\usepackage{setspace}
+\onehalfspacing
+\usepackage[protrusion=true,expansion=false]{microtype}
+\emergencystretch=2em
+
+% ─── Graphiques & couleurs ────────────────────────────────────────────────────
+\usepackage{graphicx}
+\graphicspath{{images/}}
+\usepackage[dvipsnames,table]{xcolor}
+\definecolor{cesiblue}{RGB}{0,90,150}
+\definecolor{cesigray}{RGB}{100,110,120}
+\definecolor{backcolour}{RGB}{245,247,250}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{medalor}{RGB}{180,150,0}
+\definecolor{medalbronze}{RGB}{175,105,45}
+
+% ─── Tables & flottants ───────────────────────────────────────────────────────
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{adjustbox}
+\usepackage{float}
+\usepackage{placeins}
+\usepackage{caption}
+\usepackage{subcaption}
+\captionsetup{font=small,labelfont={bf,color=cesiblue},textfont=it,skip=6pt,width=0.97\linewidth}
+
+% ─── Boîtes & encadrés ───────────────────────────────────────────────────────
+\usepackage[most,breakable]{tcolorbox}
+\newtcolorbox{infobox}[1][]{%
+    colback=backcolour, colframe=cesiblue, fonttitle=\bfseries\small\color{white},
+    colbacktitle=cesiblue, title={#1}, boxrule=0.5pt, arc=4pt,
+    left=6pt, right=6pt, top=2pt, bottom=6pt, breakable}
+\newtcolorbox{warningbox}[1][]{%
+    colback=orange!8, colframe=orange!60, fonttitle=\bfseries\small\color{orange!80!black},
+    title={#1}, boxrule=0.5pt, arc=4pt, left=6pt, right=6pt, top=2pt, bottom=6pt, breakable}
+\newtcolorbox{successbox}[1][]{%
+    colback=green!5, colframe=green!50!black, fonttitle=\bfseries\small\color{green!40!black},
+    title={#1}, boxrule=0.5pt, arc=4pt, left=6pt, right=6pt, top=2pt, bottom=6pt, breakable}
+
+% ─── Listings ─────────────────────────────────────────────────────────────────
+\usepackage{listings}
+\lstset{
+    backgroundcolor=\color{backcolour},
+    commentstyle=\color{codegreen}\itshape,
+    keywordstyle=\color{cesiblue}\bfseries,
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=5pt,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=2,
+    frame=single,
+    rulecolor=\color{cesiblue},
+    extendedchars=true,
+    aboveskip=8pt,
+    belowskip=8pt
+}
+
+% ─── TikZ ─────────────────────────────────────────────────────────────────────
+\usepackage{tikz}
+\usetikzlibrary{positioning,shapes.geometric,shapes.misc,arrows.meta,calc,fit,backgrounds,decorations.pathreplacing}
+
+% ─── Liens ────────────────────────────────────────────────────────────────────
+\usepackage{hyperref}
+\usepackage{bookmark}
+\hypersetup{colorlinks=true,linkcolor=cesiblue,filecolor=magenta,urlcolor=cesiblue,citecolor=cesiblue}
+
+% ─── Listes ───────────────────────────────────────────────────────────────────
+\usepackage{enumitem}
+\setlist[itemize]{topsep=3pt,itemsep=2pt,parsep=0pt}
+\setlist[enumerate]{topsep=3pt,itemsep=2pt,parsep=0pt}
+
+% ─── En-têtes & pieds de page ─────────────────────────────────────────────────
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\setlength{\headheight}{15pt}
+\fancyhf{}
+\rhead{\color{cesigray}\small Projet Décisionnel CHU -- Livrable 2}
+\lfoot{\color{cesigray}\small CESI École d'Ingénieurs}
+\rfoot{\color{cesiblue}\bfseries\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+% ─── Titres ───────────────────────────────────────────────────────────────────
+\usepackage{titlesec}
+\titleformat{\chapter}[display]
+  {\normalfont\huge\bfseries\color{cesiblue}}{\chaptertitlename\ \thechapter}{20pt}{\Huge}
+  [\color{cesiblue!60}\titlerule]
+\titlespacing*{\chapter}{0pt}{-30pt}{20pt}
+\titleformat{\section}
+  {\normalfont\large\bfseries\color{cesiblue}}{\thesection}{1em}{}
+  [\color{cesiblue!35}\titlerule]
+\titlespacing*{\section}{0pt}{14pt}{8pt}
+\titleformat{\subsection}
+  {\normalfont\normalsize\bfseries\color{cesiblue}}{\thesubsection}{1em}{}
+\titlespacing*{\subsection}{0pt}{10pt}{4pt}
+
+\setcounter{tocdepth}{2}
+
+% ─── Macros figures ───────────────────────────────────────────────────────────
+\newcommand{\figschema}[2][]{%
+  \if\relax\detokenize{#1}\relax
+    \includegraphics[width=\linewidth,keepaspectratio]{#2}%
+  \else
+    \includegraphics[#1,keepaspectratio]{#2}%
+  \fi}
+\newcommand{\figschemaLarge}[1]{%
+  \includegraphics[width=\linewidth,height=0.70\textheight,keepaspectratio]{#1}}
+\newcommand{\figschemaCompact}[1]{%
+  \centering\includegraphics[width=0.72\linewidth,keepaspectratio]{#1}}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\begin{document}
+
+% ==========================================
+% PAGE DE GARDE (style référentiel Livrable 1)
+% ==========================================
+\hypersetup{pageanchor=false}
+\begin{titlepage}
+    \pagecolor{cesiblue}
+    \color{white}
+    % Bandes décoratives TikZ (overlay)
+    \begin{tikzpicture}[remember picture, overlay]
+        \fill[teal!65!white]
+            (current page.north west) rectangle
+            ([yshift=-1.5cm]current page.north east);
+        \fill[cesiblue!45!white]
+            (current page.south west) rectangle
+            ([yshift=1.5cm]current page.south east);
+        % Filigrane central très léger
+        \node[opacity=0.07, font=\fontsize{120}{120}\selectfont\bfseries\sffamily,
+              text=white] at (current page.center) {CHU};
+    \end{tikzpicture}
+
+    \vspace*{3.2cm}
+    \begin{center}
+        {\fontsize{11}{14}\selectfont\bfseries
+            CESI -- ÉCOLE D'INGÉNIEURS}\\[0.3cm]
+        {\large PGE A3 FISE -- Bloc Stockage \& Big Data 2025/2026}\\[1.8cm]
+
+        \textcolor{teal!65!white}{\rule{11cm}{0.8mm}}\\[0.8cm]
+
+        {\fontsize{28}{34}\selectfont\bfseries PROJET DÉCISIONNEL CHU}\\[0.6cm]
+        {\fontsize{15}{20}\selectfont Livrable 2}\\[0.4cm]
+        {\fontsize{12}{16}\selectfont\itshape
+            Implémentation du Modèle Physique,\\[0.15cm]
+            Écosystème ETL et Optimisations}\\[0.8cm]
+
+        \textcolor{teal!65!white}{\rule{11cm}{0.8mm}}\\[2.2cm]
+
+        {\normalsize
+        \begin{tabular}{@{}r@{\hspace{0.6em}}l@{}}
+            \textbf{Groupe 2 :} &
+                Abdoulaye \textsc{Watt},\quad Omar \textsc{El Ghazal}\\
+            &   Thierno \textsc{Diallo},\quad Seyni \textsc{Baldé}\\[0.7cm]
+            \textbf{Périmètre :} &
+                Modèle Physique, Architecture ETL,\\
+            &   Sécurisation \& Performance
+        \end{tabular}}\\[2cm]
+
+        {\small\itshape Document Général de Synthèse Technique - Juin 2026}
+    \end{center}
+\end{titlepage}
+\nopagecolor
+\hypersetup{pageanchor=true}
+
+\tableofcontents
+\clearpage
+
+{%
+  \hypersetup{linkcolor=black}%
+  \listoffigures
+  \addcontentsline{toc}{section}{Table des figures}%
+  \clearpage
+  \listoftables
+  \addcontentsline{toc}{section}{Liste des tableaux}%
+  \clearpage
+}
+
+% ==========================================
+\chapter{Implémentation du Modèle Physique et Optimisations}
+% ==========================================
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Contexte technique, objectifs et périmètre fonctionnel}
+\label{sec:contexte}
+% ─────────────────────────────────────────────────────────────────────────────
+
+\subsection{Vision stratégique et alignement décisionnel}
+Un hôpital produit chaque jour des milliers d'actes médicaux, des centaines de dossiers de décès, des scores de satisfaction patient. Ces données dorment dans des silos hétérogènes - bases opérationnelles PostgreSQL, fichiers CSV plats déposés sur serveurs FTP, exports épidémiologiques de l'INSEE - sans qu'aucun indicateur transversal ne permette de répondre à une question aussi simple que : \textit{« Combien de consultations ont eu lieu en Île-de-France au premier trimestre, par spécialité ? »}
+
+C'est ce défi que notre équipe a relevé dans le cadre du \textbf{Projet Décisionnel CHU}. Ce Livrable~2 documente la brique centrale de notre réponse : la mise en \oe uvre physique de l'entrepôt de données, le pipeline ETL qui l'alimente, et les mécanismes de résilience qui le sécurisent. L'objectif final est d'offrir aux praticiens et directeurs d'établissements des indicateurs fiables, actualisés quotidiennement, accessibles via l'interface Metabase.
+
+\subsection{Architecture Medallion -- pourquoi trois couches ?}
+Avant tout traitement, nous avons posé une règle : \textbf{ne jamais altérer la donnée source}. Cette contrainte, apparemment simple, détermine toute notre architecture. Pour la respecter tout en produisant des données analytiques propres, nous avons adopté le paradigme \textbf{Medallion} - une progression en trois zones de raffinement croissant, chacune ayant une responsabilité exclusive :
+
+\begin{infobox}[Zones Medallion -- Bronze, Silver, Gold]
+\begin{itemize}
+    \item \textbf{Bronze (Ingestion brute) :} photographie immuable des sources. Les fichiers CSV et dumps PostgreSQL y sont conservés tels quels, sans aucune altération. En cas d'anomalie, c'est ici que l'on remonte.
+    \item \textbf{Silver (Staging) :} zone de nettoyage. Typage strict, normalisation de la casse, validation de complétude. La donnée y est fiable mais pas encore analytique.
+    \item \textbf{Gold (Exposition analytique) :} la constellation conforme prête pour Metabase. C'est la seule zone interrogée par les 9 KPI de pilotage.
+\end{itemize}
+\end{infobox}
+
+Cette séparation présente un avantage opérationnel majeur : si une règle de qualité Silver évolue, il suffit de rejouer le pipeline depuis Bronze sans ré-extraire les sources. Cela confère à notre architecture une \textbf{réversibilité totale} particulièrement précieuse en contexte hospitalier où les données sources sont rarement maîtrisées.
+
+\subsection{Modèle en constellation conforme -- de la théorie à l'implémentation}
+La modélisation de l'activité clinique n'est pas anodine : une consultation fait intervenir un patient, un praticien, un établissement, un diagnostic et une date. Un décès se rattache à une région et une date. Un score de satisfaction lie un établissement, une zone géographique et une période. Ces entités \textbf{partagent naturellement} certaines dimensions - le temps et la géographie - ce qui impose un modèle en \textit{constellation conforme} plutôt qu'une simple étoile isolée.
+
+La figure~\ref{fig:constellation_mini} en donne la vue synthétique, la figure~\ref{fig:star_consultation} détaille le sous-modèle de consultation, et la figure~\ref{fig:constellation_complete} expose le modèle physique complet.
+
+% TikZ -- Constellation mini (3 faits + dims partagées/privées)
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    fact/.style={draw=medalor!80, fill=medalor!12, thick, rectangle, rounded corners=4pt,
+                 font=\sffamily\small\bfseries, align=center,
+                 minimum width=3.0cm, minimum height=0.9cm},
+    dimC/.style={draw=cesiblue, fill=cesiblue!14, very thick, rectangle, rounded corners=4pt,
+                 font=\sffamily\scriptsize\bfseries, align=center,
+                 minimum width=2.8cm, minimum height=0.75cm},
+    dimP/.style={draw=cesiblue!55, fill=cesiblue!5, rectangle, rounded corners=3pt,
+                 font=\sffamily\scriptsize, align=center,
+                 minimum width=2.5cm, minimum height=0.65cm},
+    >=Stealth
+]
+% Dimensions conformes (colonne centrale)
+\node[dimC] (dt)  at (0, 0)    {DIM\_TEMPS};
+\node[dimC] (dg)  at (0,-1.8)  {DIM\_GEOGRAPHIE};
+
+% Tables de faits
+\node[fact] (fc)  at (-4.5,-0.9) {FAIT\_\\CONSULTATION};
+\node[fact] (fd)  at ( 4.2, 0.4) {FAIT\_DECES};
+\node[fact] (fs)  at ( 4.2,-2.2) {FAIT\_SATISFACTION};
+
+% Dimensions privées FAIT_CONSULTATION
+\node[dimP] (dp)  at (-7.8, 0.4)  {DIM\_PATIENT};
+\node[dimP] (de)  at (-7.8,-0.9)  {DIM\_ETABLISSEMENT};
+\node[dimP] (dpr) at (-7.8,-2.2)  {DIM\_PROFESSIONNEL};
+\node[dimP] (dd)  at (-4.5,-2.8)  {DIM\_DIAGNOSTIC};
+
+% Liens FK conformes (tirets bleus)
+\draw[->, dashed, cesiblue, thick] (fc.north) to[out=90,in=180] (dt.west);
+\draw[->, dashed, cesiblue, thick] (fc.south) to[out=270,in=180] (dg.west);
+\draw[->, dashed, cesiblue, thick] (fd.west)  to[out=180,in=0]  (dt.east);
+\draw[->, dashed, cesiblue, thick] (fd.south) to[out=270,in=45] (dg.north east);
+\draw[->, dashed, cesiblue, thick] (fs.west)  to[out=180,in=0]  (dg.east);
+\draw[->, dashed, cesiblue, thick] (fs.north) to[out=90,in=315] (dt.south east);
+
+% Liens FK privés (gris)
+\draw[->, cesigray] (fc.west) to[out=150,in=0] (dp.east);
+\draw[->, cesigray] (fc.west) -- (de.east);
+\draw[->, cesigray] (fc.west) to[out=210,in=0] (dpr.east);
+\draw[->, cesigray] (fc.south) -- (dd.north);
+
+% Légende
+\node[fact, minimum width=1.5cm, minimum height=0.5cm,
+      font=\sffamily\tiny\bfseries] (lf) at (-1.5,-4.0) {Fait};
+\node[dimC, minimum width=1.5cm, minimum height=0.5cm,
+      font=\sffamily\tiny\bfseries] (ldc) at (0.8,-4.0) {Dim. conforme};
+\node[dimP, minimum width=1.5cm, minimum height=0.5cm,
+      font=\sffamily\tiny] (ldp) at (3.0,-4.0) {Dim. privée};
+\end{tikzpicture}
+\caption{Constellation conforme -- trois tables de faits reliées aux deux dimensions partagées (tirets bleus)}
+\label{fig:constellation_mini}
+\end{figure}
+
+\textbf{Comment lire ce schéma.} Les rectangles \textcolor{medalor!80!black}{\textbf{jaune-dorés}} sont les tables de faits (ce qui est mesuré : actes, décès, scores). Les rectangles \textcolor{cesiblue}{\textbf{bleu foncé}} sont les dimensions conformes, partagées par au moins deux faits - elles portent les axes d'analyse transversaux (quand ? où ?). Les rectangles \textcolor{cesiblue!55}{\textbf{bleu clair}} sont les dimensions privées, propres à \texttt{FAIT\_CONSULTATION} (qui ? avec quel diagnostic ?). Les \textbf{tirets bleus} matérialisent les clés étrangères de conformité : c'est eux qui permettent, par exemple, de croiser satisfaction et mortalité sur la même région et la même période.
+
+Le sous-modèle le plus riche est celui des consultations. Son schéma en étoile détaillé est exposé ci-dessous, avec les colonnes et types physiques PostgreSQL :
+
+% TikZ -- Schéma en étoile FAIT_CONSULTATION
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    fact/.style={draw=medalor!80, fill=medalor!12, very thick, rectangle, rounded corners=5pt,
+                 font=\sffamily\scriptsize, align=left,
+                 minimum width=4.0cm},
+    dim/.style={draw=cesiblue, fill=cesiblue!10, thick, rectangle, rounded corners=4pt,
+                font=\sffamily\scriptsize, align=left,
+                minimum width=3.5cm},
+    >=Stealth, node distance=2.4cm
+]
+\node[fact] (fc) {
+    \textbf{FAIT\_CONSULTATION}\\[2pt]
+    \underline{id\_fait} \texttt{SERIAL}\\
+    id\_temps \texttt{INT (FK)}\\
+    id\_patient \texttt{INT (FK)}\\
+    finess \texttt{TEXT (FK)}\\
+    id\_professionnel \texttt{INT (FK)}\\
+    code\_diag \texttt{TEXT (FK)}\\
+    nb\_consultations \texttt{INT}
+};
+
+\node[dim, above=1.8cm of fc] (dt) {
+    \textbf{DIM\_TEMPS}\\[2pt]
+    \underline{id\_temps} \texttt{INT}\\
+    date\_complete \texttt{DATE}\\
+    annee / mois / trimestre
+};
+\node[dim, right=2.6cm of fc, yshift=1.4cm] (dp) {
+    \textbf{DIM\_PATIENT}\\[2pt]
+    \underline{id\_patient} \texttt{INT}\\
+    sexe \texttt{CHAR(1)}\\
+    age \texttt{INT}
+};
+\node[dim, right=2.6cm of fc, yshift=-1.4cm] (de) {
+    \textbf{DIM\_ETABLISSEMENT}\\[2pt]
+    \underline{finess} \texttt{TEXT}\\
+    libelle \texttt{TEXT}\\
+    code\_region \texttt{TEXT}
+};
+\node[dim, below=1.8cm of fc] (dd) {
+    \textbf{DIM\_DIAGNOSTIC}\\[2pt]
+    \underline{code\_diag} \texttt{TEXT}\\
+    libelle\_diag \texttt{TEXT}
+};
+\node[dim, left=2.6cm of fc] (dpr) {
+    \textbf{DIM\_PROFESSIONNEL}\\[2pt]
+    \underline{id\_professionnel} \texttt{INT}\\
+    libelle\_profession \texttt{TEXT}\\
+    code\_profession \texttt{TEXT}
+};
+
+\draw[->] (fc.north) -- (dt.south);
+\draw[->] (fc.north east) to[out=60,in=210] (dp.south west);
+\draw[->] (fc.south east) to[out=300,in=150] (de.north west);
+\draw[->] (fc.south) -- (dd.north);
+\draw[->] (fc.west) -- (dpr.east);
+\end{tikzpicture}
+\caption{Sous-modèle en étoile de \texttt{FAIT\_CONSULTATION} -- cinq dimensions avec colonnes et types physiques}
+\label{fig:star_consultation}
+\end{figure}
+
+\textbf{Comment lire ce schéma.} La table centrale \texttt{FAIT\_CONSULTATION} ne stocke que des mesures (\texttt{nb\_consultations}) et des clés étrangères. Elle ne contient aucune information descriptive - celles-ci sont déléguées aux dimensions. Cette conception garantit que le fait est \textit{atomique} et que chaque axe d'analyse est modifiable indépendamment : changer le libellé d'un établissement ne touche que \texttt{DIM\_ETABLISSEMENT}, sans altérer le million de lignes de faits. La flèche \texttt{FAIT\_CONSULTATION} $\rightarrow$ \texttt{DIM\_TEMPS} est la jointure la plus sollicitée par Metabase : c'est sur elle que porte l'index B-Tree \texttt{idx\_fait\_consultation\_date}.
+
+Le modèle complet, intégrant \texttt{fait\_deces} et \texttt{fait\_satisfaction}, est présenté ci-après :
+
+\begin{figure}[htbp]
+    \centering
+    \figschema[width=0.92\linewidth]{constellation_complete.png}
+    \caption{Modèle physique complet de la constellation conforme (dimensions partagées en rouge)}
+    \label{fig:constellation_complete}
+\end{figure}
+
+\textbf{Lecture d'ensemble.} Les dimensions en rouge sont les dimensions conformes partagées. Remarquez que \texttt{FAIT\_DECES} n'a que deux clés étrangères (\texttt{id\_temps} et \texttt{id\_geo}) : c'est parce que les données INSEE sur les décès sont agrégées par région et par date, sans individu nominatif - un choix délibéré pour la conformité RGPD. À l'inverse, \texttt{FAIT\_CONSULTATION} dispose de cinq dimensions, reflétant la richesse des données hospitalières opérationnelles.
+
+\subsection{Contraintes de dépendance vis-à-vis des systèmes sources}
+Notre périmètre dépend entièrement de la stabilité des structures amont. Toute modification du schéma de la base opérationnelle (renommage de colonne, changement de type) sans synchronisation avec nos scripts d'extraction rompt immédiatement le pipeline. C'est pourquoi nous versionons nos scripts ETL dans Git et documentons chaque changement de source dans notre référentiel Livrable~1.
+
+\clearpage
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Choix techniques, architecture et justification}
+% ─────────────────────────────────────────────────────────────────────────────
+
+\subsection{Stack technologique open source -- pourquoi ces choix ?}
+Construire un entrepôt de données ne se résume pas à choisir une base de données : c'est choisir un écosystème entier, avec ses contraintes de déploiement, de maintenance et de montée en charge. Nous avons opté pour une stack \textbf{100\,\% open source}, déployable sur n'importe quelle machine via Docker, sans licence commerciale.
+
+Le c\oe ur de notre entrepôt est \textbf{PostgreSQL 16} pour ses capacités relationnelles matures, son support des index B-Tree sur des millions de lignes et sa compatibilité native avec Metabase. Python (Pandas, Psycopg2) assure l'ingestion et la transformation : un seul langage pour tout le pipeline évite la fragmentation des compétences. Airflow orchestre et planifie, permettant de rejouer n'importe quelle étape en cas d'échec. Enfin, une brique \textbf{Apache Hive / Parquet} est préparée pour les futures données d'hospitalisation massives, dont le volume colonnaire excéderait les capacités optimales de PostgreSQL.
+
+\begin{itemize}
+    \item \textbf{Python (Pandas, Psycopg2, PyHive) :} ingestion brute, requêtage unifié et transformations Silver. Un seul écosystème, une seule courbe d'apprentissage.
+    \item \textbf{PostgreSQL 16 (Entrepôt Gold) :} moteur relationnel de l'entrepôt - staging Silver, constellation Gold et 9 vues KPI (\texttt{006\_create\_metabase\allowbreak\_views.sql}). Choisi pour sa maturité OLAP et sa robustesse transactionnelle.
+    \item \textbf{Apache Hive \& Parquet :} brique \texttt{hive/} prête pour l'hospitalisation colonnaire future. L'implémentation courante reste sur PostgreSQL via \texttt{run\_sql\_on\allowbreak\_postgres}.
+    \item \textbf{Apache Airflow 2.9 (Orchestration) :} DAG \texttt{chu\_daily\_pipeline} planifié à minuit, \texttt{LocalExecutor}, contrôlé par la variable \texttt{ENABLE\_EXTENDED\_FACTS} pour activer ou désactiver les flux secondaires.
+    \item \textbf{Metabase v0.50 (Restitution BI) :} 9 tableaux de bord KPI exposant notre Gold aux décideurs, sans écrire une ligne de SQL front-end.
+\end{itemize}
+
+\subsection{Infrastructure Docker -- la reproductibilité comme fondation}
+L'un des risques majeurs d'un projet data est le syndrome du \textit{« ça marche sur ma machine »}. Pour l'éliminer, nous avons adopté une démarche d'\textbf{Infrastructure as Code} (IaC) : l'intégralité de notre environnement est décrit dans \texttt{docker\allowbreak-compose.yml} et peut être recréé en une commande (\texttt{docker compose up}). La figure~\ref{fig:docker_images} montre les 8 images actives en production locale.
+
+\begin{figure}[htbp]
+    \centering
+    \figschema[width=0.92\linewidth]{docker_images.png}
+    \caption{Docker Desktop -- 8 images actives de notre stack (Airflow $\times$3, PostgreSQL, Metabase $\times$2, logserver $\times$2)}
+    \label{fig:docker_images}
+\end{figure}
+
+\textbf{Lecture de la capture.} On distingue les trois variantes Airflow (\texttt{init}, \texttt{scheduler}, \texttt{webserver}) qui ensemble forment l'orchestrateur, le service \texttt{postgres:16-alpine} (395 Mo) qui héberge notre Gold, et deux versions de Metabase (\texttt{latest} en production, \texttt{v0.50.29} en archive). Le service \texttt{easysave-logserver} assure la persistance des logs Airflow hors conteneur.
+
+\begin{warningbox}[Contrainte réseau Docker Desktop / Windows]
+Sur notre poste de développement Windows, la résolution DNS interne Docker était instable. Nous l'avons contournée en fixant une IP statique \texttt{172.28.0.10} pour le service PostgreSQL dans \texttt{docker-compose.yml} via \texttt{extra\_hosts}, garantissant la connectivité des workers Airflow.
+\end{warningbox}
+
+\subsection{Arborescence ETL -- la modularité comme principe de conception}
+Dès le démarrage du projet, nous avons décidé que chaque script aurait une et une seule responsabilité : un script extrait, un script charge, un script transforme. Cette règle, inspirée du principe de \textit{Single Responsibility}, permet à un développeur arrivant sur le projet de localiser instantanément le code à modifier sans risquer d'effet de bord. L'arborescence ci-dessous reflète cette discipline.
+
+\begin{lstlisting}[language=bash, caption=Arborescence principale du projet ETL]
+projet_bigdata_chu/
+|-- airflow/
+|   |-- dags/
+|   |   |-- chu_daily_pipeline.py   # DAG principal Airflow
+|   |   `-- utils.py                # run_sql_on_postgres, get_connection
+|   `-- scripts/                    # (hors DAG)
+|-- data/
+|   |-- raw/                        # Sources brutes (FTP, dumps)
+|   |-- bronze/                     # CSV immuables post-extraction
+|   `-- silver/                     # (staging en base PostgreSQL)
+|-- sql/
+|   |-- init/                       # 001..006 DDL Gold + vues Metabase
+|   `-- scripts/
+|       |-- extract/                # extract_*.py (Bronze)
+|       |-- load/                   # load_*.py   (Silver)
+|       `-- transform/              # *.sql        (Gold)
+`-- hive/
+    `-- scripts/                    # HiveQL Parquet (perspective hosp.)
+\end{lstlisting}
+
+\subsection{Le défi mémoire : 25 millions de lignes dans un conteneur}
+Notre stack s'exécute dans des conteneurs Docker aux ressources limitées. Au lancement du projet, nous avons rapidement confronté une limite imprévue : ce n'est pas PostgreSQL qui était le goulot, mais la \textbf{mémoire vive des workers Python} chargés d'ingérer les données en Bronze.
+
+Pour les consultations (1\,027\,157 lignes), un \texttt{pd.read\_sql()} en une passe reste viable. Mais \texttt{DECES\_EN\_FRANCE.csv} est d'un tout autre ordre de grandeur : \textbf{24,7 millions de lignes}. Lors de nos premiers tests, le conteneur Airflow s'arrêtait silencieusement après environ quatre minutes - aucun traceback, aucune exception. C'est en croisant les logs Docker et les métriques mémoire que nous avons identifié des \textbf{OOM Kill} (Out-Of-Memory Kill) répétés, documentés dans notre CRP du 08/06/2026. La solution s'est articulée autour de trois optimisations combinées dans \texttt{extract\_deces.py} :
+
+\begin{infobox}[Optimisations mémoire -- extract\_deces.py]
+\begin{enumerate}
+    \item \textbf{Lecture chunkée :} \texttt{chunksize=500\_000} -- jamais plus d'un demi-million de lignes en RAM.
+    \item \textbf{Projection columnaire :} \texttt{usecols=['date\_deces','code\_region']} -- facteur 3 à 5 de réduction d'empreinte.
+    \item \textbf{Pré-agrégation avant staging :} 24\,775\,383 lignes Bronze réduites en $\sim$3\,500 couples (date $\times$ région INSEE), évitant l'insertion ligne à ligne.
+\end{enumerate}
+\end{infobox}
+
+Un second risque mémoire provient de l'ordonnancement concurrent : plusieurs runs Airflow manuels parallèles saturaient la RAM. Nous avons verrouillé le DAG avec \texttt{max\_active\_runs=1} et \texttt{retries=1} (délai 5 min).
+
+\clearpage
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Détail implémentation pipeline et résultats}
+% ─────────────────────────────────────────────────────────────────────────────
+
+\subsection{La donnée en mouvement -- cinématique d'ingestion}
+Avant d'écrire la première ligne de code, nous avons modélisé le trajet exact que suit chaque donnée depuis sa source jusqu'à Metabase. Ce travail de conception en amont nous a évité de nombreux allers-retours coûteux. La figure~\ref{fig:cinematique_etl} représente cette cinématique globale.
+
+Le principe central est l'\textbf{idempotence} : quel que soit le nombre de fois que le pipeline s'exécute, le résultat en Gold doit être identique. Nous l'assurons par un \texttt{TRUNCATE} systématique du staging avant chaque chargement - ce qui signifie qu'un run partiel ou échoué peut être relancé sans risque d'accumulation de doublons.
+
+\begin{figure}[htbp]
+    \centering
+    \figschema[width=0.88\linewidth]{cinematique_etl.png}
+    \caption{Cinématique technique des flux d'ingestion Bronze $\rightarrow$ Silver $\rightarrow$ Gold}
+    \label{fig:cinematique_etl}
+\end{figure}
+
+\textbf{Lecture du schéma.} Les trois colonnes de gauche à droite représentent les zones Medallion. Les flèches verticales au sein de chaque zone indiquent l'ordre des opérations ; les flèches horizontales entre zones matérialisent les points de transfert (CSV en Bronze, commande \texttt{COPY} vers Silver, requêtes SQL vers Gold). Notez que la zone Silver est volontairement \textit{détruite et recréée} à chaque exécution - c'est le mécanisme d'idempotence.
+
+\subsection{Le c\oe ur de l'orchestration -- le DAG Airflow}
+L'Airflow DAG est la pièce d'intelligence centrale de notre pipeline : c'est lui qui décide dans quel ordre lancer les tâches, lesquelles peuvent s'exécuter en parallèle, et combien de fois relancer une tâche en échec. La figure~\ref{fig:dag_airflow} représente son graphe de dépendances tel qu'implémenté dans \texttt{chu\_daily\_pipeline.py}.
+
+\begin{figure}[H]
+    \centering
+    \resizebox{0.96\linewidth}{!}{%
+    \begin{tikzpicture}[
+        node distance=1.0cm and 0.5cm, >=Stealth, font=\sffamily\scriptsize,
+        dag/.style={draw=cesiblue, fill=blue!5, rectangle, rounded corners=3pt,
+                    minimum width=2.4cm, minimum height=0.7cm, align=center},
+        dagred/.style={draw=red!60, fill=red!5, rectangle, rounded corners=3pt,
+                       minimum width=2.4cm, minimum height=0.7cm, align=center},
+        start/.style={draw=cesigray, fill=gray!10, circle, minimum size=1.0cm, align=center},
+        endnode/.style={draw=green!50!black, fill=green!8, rectangle, rounded corners=3pt,
+                        minimum width=2.2cm, minimum height=0.7cm, align=center}
+    ]
+    % Noeud de départ
+    \node[start] (s) {\textbf{00:00}\\\tiny Daily};
+
+    % Branche PostgreSQL (haut)
+    \node[dag, right=1.2cm of s, yshift=1.2cm]  (exp) {\texttt{extract\_postgres}};
+    \node[dag, right=1.1cm of exp]               (epr) {\texttt{extract\_profess.}};
+    \node[dag, right=1.1cm of epr]               (lw)  {\texttt{load\_to\_wh.}};
+    \node[dag, right=1.1cm of lw]                (tco) {\texttt{transform\_cons.}};
+    \node[dag, right=1.1cm of tco]               (tpr) {\texttt{transform\_prof.}};
+
+    % Branche CSV (bas)
+    \node[dag, right=1.2cm of s, yshift=-1.2cm] (ecsv) {\texttt{extract\_csv}};
+    \node[dagred, right=1.1cm of ecsv, yshift=0.7cm] (edec) {\texttt{extract\_deces}};
+    \node[dag, right=1.1cm of ecsv, yshift=-0.7cm](esat) {\texttt{extract\_satis.}};
+    \node[dag, right=1.1cm of edec]              (ldec) {\texttt{load\_fait\_deces}};
+    \node[dag, right=1.1cm of ldec]              (tgeo) {\texttt{trans.\_geo.}};
+
+    % Branche établissements
+    \node[dag, below=0.5cm of esat]              (eetab) {\texttt{extract\_etab.}};
+    \node[dag, right=1.1cm of eetab]             (letab) {\texttt{load\_stg\_etab.}};
+
+    % Validate + notify (fin)
+    \node[dag, right=1.4cm of tpr, yshift=-1.5cm]  (vg) {\texttt{validate\_gold}};
+    \node[endnode, right=1.1cm of vg]               (ns) {\texttt{notify\_success}};
+
+    % Flèches branche PostgreSQL
+    \draw[->, thick] (s.east) to[out=30,in=180] (exp.west);
+    \draw[->, thick] (exp) -- (epr);
+    \draw[->, thick] (epr) -- (lw);
+    \draw[->, thick] (lw)  -- (tco);
+    \draw[->, thick] (tco) -- (tpr);
+
+    % Flèches branche CSV
+    \draw[->, thick] (s.east) to[out=330,in=180] (ecsv.west);
+    \draw[->, thick] (ecsv.east) to[out=45,in=180]  (edec.west);
+    \draw[->, thick] (ecsv.east) to[out=315,in=180] (esat.west);
+    \draw[->, thick] (ecsv.east) to[out=270,in=90]  (eetab.north);
+    \draw[->, thick] (edec)  -- (ldec);
+    \draw[->, thick] (ldec)  -- (tgeo);
+    \draw[->, thick] (esat.east) to[out=0,in=210] (vg.west);
+    \draw[->, thick] (eetab) -- (letab);
+    \draw[->, thick] (letab.east) to[out=0,in=240] (vg.west);
+
+    % Convergence vers validate
+    \draw[->, thick] (tpr.east)  to[out=0,in=90]  (vg.north);
+    \draw[->, thick] (tgeo.east) to[out=0,in=180] (vg.west);
+    \draw[->, thick] (vg) -- (ns);
+
+    % Annotation goulot
+    \node[font=\sffamily\tiny, text=red!70!black, above=0.1cm of edec]
+          {\textit{goulot -- 25M lignes}};
+    \end{tikzpicture}}
+    \caption{Graphe des dépendances du DAG \texttt{chu\_daily\_pipeline} -- en rouge : tâche goulot \texttt{extract\_deces}}
+    \label{fig:dag_airflow}
+\end{figure}
+
+\textbf{Comment lire ce graphe.} La lecture se fait de gauche à droite. Le nœud gris \textbf{00:00} est le point de déclenchement quotidien. Deux branches partent en parallèle : la branche haute (PostgreSQL) extrait les consultations et les professionnels ; la branche basse (CSV) gère les décès, la satisfaction et les établissements. \textbf{La tâche en rouge} (\texttt{extract\_deces}) signale le goulot identifié : c'est elle qui traite les 25 millions de lignes chunkées et qui impose les garde-fous mémoire décrits en \S\ref{sec:contexte}. Le nœud vert \texttt{notify\_success} ne s'exécute qu'après la convergence de toutes les branches vers \texttt{validate\_gold} - garantissant qu'aucune entité Gold n'est partiellement alimentée.
+
+\subsection{Preuve d'exécution -- la vue Grid Airflow}
+Un graphe de dépendances ne vaut que s'il s'exécute. La figure~\ref{fig:airflow_grid} est la capture d'écran de l'interface Airflow lors du run du 07/06/2026, en mode \texttt{ENABLE\_\allowbreak EXTENDED\_\allowbreak FACTS=true}.
+
+\begin{figure}[htbp]
+    \centering
+    \figschema[width=\linewidth]{airflow_grid.png}
+    \caption{Interface Airflow -- vue Grid du DAG \texttt{chu\_daily\_pipeline} (run du 2026-06-07, toutes tâches en succès)}
+    \label{fig:airflow_grid}
+\end{figure}
+
+\textbf{Lecture de la vue Grid.} La colonne de gauche liste les 24 tâches du DAG. Les carrés colorés à droite représentent les runs successifs (un par jour). Le vert uniforme confirme le succès de l'ensemble des tâches sur le run du 07/06/2026. La durée d'exécution totale (indiquée dans la barre en haut) était de \textbf{01:08:52} en mode étendu - ce qui couvre le traitement des 25 M de lignes décès chunkées et le chargement de l'intégralité des entités Gold.
+
+\subsection{Volumétries mesurées -- la preuve par les chiffres}
+Le tableau~\ref{tab:vol_l2_complete} est le bilan chiffré de notre pipeline. Il démontre que chaque entité atteint le volume attendu, sans perte ni duplication. La ligne la plus parlante est celle des décès : 24,7 millions de lignes Bronze \textbf{réduites à $\sim$3\,500 couples} (date $\times$ région) en Gold, preuve que notre pré-agrégation fonctionne.
+
+\begin{table}[H]
+\centering
+\caption{Volumétrie mesurée du pipeline d'intégration (exécution du 08/06/2026)}
+\label{tab:vol_l2_complete}
+\setlength{\tabcolsep}{5pt}
+\adjustbox{max width=\linewidth}{%
+\begin{tabular}{@{} l l l r @{}}
+\toprule
+\textbf{Zone} & \textbf{Script de production} & \textbf{Entité cible} & \textbf{Lignes} \\ \midrule
+Bronze & \texttt{extract\_postgres.py}         & \texttt{consultations\_raw.csv}          & 1\,027\,157 \\
+Silver & \texttt{load\_to\_warehouse.py}        & \texttt{gold.stg\_consultations\_raw}    & 1\,027\,157 \\
+Gold   & \texttt{transform\_consultations.sql}  & \texttt{gold.fait\_consultation}         & 1\,027\,157 \\
+Bronze & \texttt{extract\_deces.py}             & \texttt{deces\_raw.csv}                  & 24\,775\,383 \\
+Silver & \texttt{load\_fait\_deces.py}           & \texttt{gold.stg\_deces\_raw}            & $\sim$3\,500 \\
+Bronze & \texttt{extract\_etablissements.py}    & \texttt{etablissements\_raw.csv}         & 404\,849 \\
+Silver & \texttt{load\_stg\_etablissements.py}  & \texttt{gold.stg\_etablissements\_raw}   & 404\,849 \\
+Gold   & \texttt{dim\_etablissement.sql}        & \texttt{gold.dim\_etablissement}         & 404\,849 \\
+Bronze & \texttt{extract\_satisfaction.py}      & \texttt{satisfaction\_raw.csv}           & 8\,984 \\
+Gold   & \texttt{transform\_fait\_satisfaction.sql} & \texttt{gold.fait\_satisfaction}     & 8\,984 \\
+Gold   & -                                    & \texttt{gold.dim\_patient}               & 100\,000 \\
+Gold   & -                                    & \texttt{gold.dim\_temps}                 & 2\,603 \\
+Gold   & -                                    & \texttt{gold.dim\_geographie}            & 11 \\ \bottomrule
+\end{tabular}}
+\end{table}
+
+\subsection{Analyse des goulots et décisions d'ordonnancement}
+Un bon pipeline n'est pas seulement un pipeline qui \textit{fonctionne}, c'est un pipeline dont on \textit{comprend} les temps d'exécution pour pouvoir les optimiser. Notre analyse du graphe (figure~\ref{fig:dag_airflow}) révèle un \textbf{parallélisme limité à la phase Extract}, suivi d'une chaîne séquentielle intentionnelle.
+
+\textbf{Phase Extract (parallèle) :} les tâches \texttt{extract\_postgres} et \texttt{extract\_csv} démarrent simultanément. Lorsque \texttt{ENABLE\_EXTENDED\_FACTS=true}, des extractions additionnelles s'enchaînent selon des dépendances fines.
+
+\textbf{Goulot dominant :} \texttt{extract\_deces} est la tâche la plus coûteuse (lecture chunkée de 25 M lignes, mapping département $\rightarrow$ région INSEE post-2016). Les phases Load et Transform sont \textbf{volontairement séquentielles} : \texttt{dim\_geographie} doit être peuplée avant que \texttt{fait\_deces} puisse y référencer ses clés étrangères. Paralléliser ces étapes introduirait des risques d'intégrité référentielle sans gain de performance significatif sur notre volume actuel.
+
+\begin{successbox}[Résultats d'exécution -- mode étendu]
+\texttt{max\_active\_runs=1} et \texttt{retries=1} (délai 5 min) évitent la saturation mémoire. Mode minimal (consultations seules) : quelques minutes. Mode étendu (8 KPI Metabase) : $\sim$10 min sur Docker Desktop Windows.
+\end{successbox}
+
+\clearpage
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Méthode, règles métier et sorties produites}
+% ─────────────────────────────────────────────────────────────────────────────
+
+\subsection{La donnée sous contrôle -- règles métier et nettoyage}
+La qualité des indicateurs Metabase dépend directement de la qualité des données qui entrent dans Gold. Une consultation sans FINESS, un score de satisfaction sans région, un décès sans date - autant de lignes qui, si elles atteignaient les tables de faits, fausseraient les agrégations KPI. Nous avons donc posé des \textbf{règles de rejet explicites} à chaque étape.
+
+\begin{itemize}
+    \item \textbf{Règle de complétude Bronze :} toute ligne sans clé pivot est rejetée dès l'extraction. Les établissements sans FINESS (\texttt{df.dropna(subset=['finess'])}) et les colonnes entièrement vides (\texttt{df.dropna(axis=1, how='all')}) disparaissent avant même d'atteindre le staging. Ce choix précoce limite la propagation de données corrompues.
+    \item \textbf{Normalisation textuelle :} les sources FTP et PostgreSQL n'utilisent pas les mêmes conventions de casse. \texttt{str.strip()} et \texttt{str.upper()} appliqués systématiquement permettent à nos jointures de fonctionner sans surprises. Le sexe est standardisé sur son premier caractère (\texttt{'M'}/\texttt{'F'}) pour éviter les valeurs ``\texttt{Masculin}'', ``\texttt{M.}'' ou ``\texttt{male}''.
+    \item \textbf{Sanitisation avancée :} les fichiers de satisfaction portent l'année dans leur nom (\textit{e.g.} \texttt{Satisfaction\_2015\_...}). Le package \texttt{re} extrait cette année via une expression régulière plutôt que de la coder en dur - ce qui rend le script robuste aux millésimes futurs. De même, les codes régions de longueur variable sont tronqués à leurs deux premiers chiffres.
+\end{itemize}
+
+\subsection{Le tunnel de transformation -- visualisation du parcours de la donnée}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    zone/.style={draw, very thick, rounded corners=6pt,
+                 minimum width=3.6cm, minimum height=7.2cm,
+                 align=center, font=\sffamily\small},
+    etape/.style={draw=gray!50, fill=white, rounded corners=3pt,
+                 minimum width=3.1cm, minimum height=0.6cm,
+                 align=center, font=\sffamily\scriptsize},
+    steptitle/.style={font=\sffamily\scriptsize\bfseries, align=center},
+    arrow/.style={->, very thick, >=Stealth},
+    >=Stealth
+]
+% ── Zone Bronze ──────────────────────────────────────────────
+\node[zone, fill=medalbronze!12, draw=medalbronze] (bronze) at (0,0) {};
+\node[font=\sffamily\bfseries\normalsize, text=medalbronze!80!black]
+    at (0, 3.3) {BRONZE};
+\node[steptitle] at (0, 2.7) {Sources brutes};
+\node[etape] at (0, 2.0) {\texttt{extract\_postgres.py}};
+\node[etape] at (0, 1.2) {\texttt{extract\_deces.py}};
+\node[etape] at (0, 0.4) {\texttt{extract\_satisfaction.py}};
+\node[etape] at (0,-0.4) {\texttt{extract\_etablissements.py}};
+\node[steptitle] at (0,-1.2) {Filtres appliqués};
+\node[etape] at (0,-1.8) {\texttt{dropna} · \texttt{usecols}};
+\node[etape] at (0,-2.6) {chunking 500k lignes};
+
+% ── Flèche Bronze → Silver ──────────────────────────────────
+\draw[arrow, medalbronze!60] (1.9,0) -- node[above, font=\sffamily\scriptsize,
+    midway, align=center, text=medalbronze!80!black]
+    {CSV\\immuables} (3.1,0);
+
+% ── Zone Silver ──────────────────────────────────────────────
+\node[zone, fill=gray!10, draw=gray!55] (silver) at (5.0,0) {};
+\node[font=\sffamily\bfseries\normalsize, text=gray!60!black]
+    at (5.0, 3.3) {SILVER};
+\node[steptitle] at (5.0, 2.7) {Staging PostgreSQL};
+\node[etape] at (5.0, 2.0) {\texttt{TRUNCATE} idempotent};
+\node[etape] at (5.0, 1.2) {\texttt{COPY FROM STDIN}};
+\node[etape] at (5.0, 0.4) {\texttt{stg\_consultations\_raw}};
+\node[etape] at (5.0,-0.4) {\texttt{stg\_deces\_raw}};
+\node[steptitle] at (5.0,-1.2) {Nettoyage};
+\node[etape] at (5.0,-1.8) {\texttt{strip} · \texttt{upper}};
+\node[etape] at (5.0,-2.6) {typage strict · validation};
+
+% ── Flèche Silver → Gold ─────────────────────────────────────
+\draw[arrow, gray!60] (6.9,0) -- node[above, font=\sffamily\scriptsize,
+    midway, align=center, text=gray!70!black]
+    {SQL\\transform} (8.1,0);
+
+% ── Zone Gold ────────────────────────────────────────────────
+\node[zone, fill=medalor!12, draw=medalor] (gold) at (10.0,0) {};
+\node[font=\sffamily\bfseries\normalsize, text=medalor!80!black]
+    at (10.0, 3.3) {GOLD};
+\node[steptitle] at (10.0, 2.7) {Constellation analytique};
+\node[etape] at (10.0, 2.0) {\texttt{fait\_consultation}};
+\node[etape] at (10.0, 1.2) {\texttt{fait\_deces}};
+\node[etape] at (10.0, 0.4) {\texttt{fait\_satisfaction}};
+\node[etape] at (10.0,-0.4) {\texttt{dim\_*} (5 dimensions)};
+\node[steptitle] at (10.0,-1.2) {Opérations};
+\node[etape] at (10.0,-1.8) {Upsert · LEFT JOIN};
+\node[etape] at (10.0,-2.6) {COALESCE · Index B-Tree};
+\end{tikzpicture}
+\caption{Tunnel de transformation : filtrage, chargement et enrichissement Bronze $\rightarrow$ Silver $\rightarrow$ Gold}
+\label{fig:tunnel_transformation}
+\end{figure}
+
+\textbf{Comment lire ce schéma.} Les trois colonnes colorées représentent les zones Medallion. \textcolor{medalbronze!80!black}{\textbf{Bronze}} (brun) : les sources brutes et leurs scripts d'extraction avec les filtres appliqués. \textcolor{gray!60!black}{\textbf{Silver}} (gris) : le staging PostgreSQL avec les opérations de chargement et de nettoyage. \textcolor{medalor!80!black}{\textbf{Gold}} (doré) : les entités de la constellation et les opérations SQL avancées. Les flèches entre zones indiquent les formats de transfert - CSV immuables de Bronze vers Silver, scripts SQL de Silver vers Gold.
+
+\subsection{Scripts d'extraction -- implémentation commentée}
+
+\begin{lstlisting}[language=Python, caption=extract\_etablissements.py -- règle de complétude FINESS]
+import pandas as pd
+from pathlib import Path
+
+def extract_etablissements():
+    try:
+        input_file  = Path('/data/raw/etablissements.csv')
+        output_file = Path('/opt/airflow/data/bronze/etablissements_raw.csv')
+        df = pd.read_csv(input_file, sep=';')
+        df = df.dropna(subset=['finess'])           # regle completude
+        output_file.parent.mkdir(parents=True, exist_ok=True)
+        df.to_csv(output_file, index=False)
+        print(f"Succes: {len(df)} etablissements extraits vers Bronze.")
+    except Exception as e:
+        print(f"Erreur lors de l'extraction : {e}")
+        raise
+
+if __name__ == '__main__':
+    extract_etablissements()
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python, caption=extract\_satisfaction.py -- normalisation colonnes et score (extrait)]
+import logging, os, re
+from pathlib import Path
+import pandas as pd
+
+logger = logging.getLogger(__name__)
+DATA_ROOT = Path(os.getenv("AIRFLOW_DATA_DIR", "/opt/airflow/data"))
+
+def _normalize_col(name: str) -> str:
+    return "".join(ch for ch in str(name).strip().lower() if ch.isalnum())
+
+def _find_column(col_map, aliases):
+    for alias in aliases:
+        key = _normalize_col(alias)
+        if key in col_map:
+            return col_map[key]
+    return None
+
+def _year_from_filename(path: Path) -> int:
+    match = re.search(r"(20\d{2})", path.name)
+    return int(match.group(1)) if match else 2024
+
+def extract_satisfaction() -> None:
+    source_files = (sorted(DATA_ROOT.glob("raw/*satisfaction*.csv")) +
+                    sorted(DATA_ROOT.glob("raw/*Satisfaction*.csv")))
+    rows = []
+    for source in source_files:
+        frame = pd.read_csv(source, dtype=str, sep=None,
+                            engine="python", on_bad_lines="skip")
+        if frame.empty:
+            continue
+        col_map = {_normalize_col(c): c for c in frame.columns}
+        finess_col = _find_column(col_map, ["finess", "id_etablissement"])
+        region_col = _find_column(col_map, ["code_region", "region"])
+        score_col  = _find_column(col_map, ["score_global", "tdacetbt"])
+        for _, row in frame.iterrows():
+            finess  = str(row[finess_col]).strip()  if finess_col  else None
+            region  = str(row[region_col]).strip()  if region_col  else None
+            if region and len(region) > 2:
+                region = "".join(c for c in region if c.isdigit())[:2]
+            try:
+                score = float(str(row[score_col]).replace(",", ".")) \
+                        if score_col else None
+            except ValueError:
+                continue
+            if finess and region and score is not None:
+                rows.append((f"{_year_from_filename(source)}-01-01",
+                             finess, region, score))
+    pd.DataFrame(rows, columns=["date_satisfaction","finess",
+                                 "code_region","score_global"]
+                ).to_csv(DATA_ROOT / "bronze/satisfaction_raw.csv", index=False)
+    logger.info("Extraction satisfaction terminee -- %d lignes", len(rows))
+\end{lstlisting}
+
+\subsection{Risque d'attrition et stratégie de compensation}
+Notre approche de rejet strict (\texttt{dropna}) est un équilibre entre rigueur et exhaustivité. Si la source opérationnelle subit une dégradation majeure de la qualité de saisie - ce qui peut arriver après une migration de système ou un changement d'équipe - nous risquons d'éliminer une fraction significative des données. Ce risque est accepté et documenté dans notre référentiel Livrable~1. La stratégie de fallback géographique (reconstruction automatique de \texttt{dim\_geographie} à partir des données disponibles) est notre première ligne de défense face à ce scénario.
+
+\clearpage
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Contrôles, résilience et limites documentées}
+% ─────────────────────────────────────────────────────────────────────────────
+
+\subsection{La résilience comme garantie de continuité de service}
+Dans un contexte hospitalier, une interruption de tableau de bord n'est pas un simple désagrément : elle peut retarder une décision médicale ou administrative. C'est pourquoi nous avons conçu notre pipeline avec le principe \textit{fail-fast, recover-smart} : \textbf{détecter l'erreur le plus tôt possible} et \textbf{récupérer automatiquement si c'est faisable}.
+
+Chaque script enveloppe ses connexions PostgreSQL et ses lectures de fichiers dans des blocs \texttt{try/except} stricts avec levée explicite (\texttt{raise}). Airflow intercepte ces exceptions, les journalise et peut relancer la tâche automatiquement. Cette chaîne de supervision - script $\rightarrow$ Airflow $\rightarrow$ log - garantit qu'aucune anomalie ne passe silencieusement.
+
+\begin{infobox}[Fallback géographique -- auto-reconstruction de dim\_geographie]
+Si le fichier de géographie brute FTP est absent, notre script ne s'arrête pas : il balaie dynamiquement les codes régions présents dans \texttt{deces\_raw.csv} et \texttt{satisfaction\_raw.csv} pour reconstruire automatiquement \texttt{dim\_geographie}. Ce mécanisme de secours garantit que les KPI de mortalité régionale restent alimentés même si la source géographique officielle est temporairement indisponible.
+\end{infobox}
+
+\subsection{L'exécuteur SQL unifié -- traçabilité et débogage simplifié}
+Plutôt que d'appeler chaque script SQL depuis une tâche Airflow distincte, nous avons centralisé l'exécution dans un module \texttt{run\_sql\_on\_postgres} (dans \texttt{utils.py}). Cette décision simplifie considérablement le débogage : toute erreur SQL remonte avec le contexte complet (fichier exécuté, ligne, état de la transaction), rendant le message d'erreur Airflow directement exploitable sans chercher dans plusieurs logs.
+
+\begin{lstlisting}[language=Python, caption=load\_to\_warehouse.py -- COPY PostgreSQL avec TRUNCATE idempotent]
+def load_to_warehouse() -> None:
+    with _get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("CREATE SCHEMA IF NOT EXISTS gold")
+            cur.execute(f"TRUNCATE TABLE {STAGING_TABLE}")
+            with open(CONSULTATIONS_FILE, "r", encoding="utf-8") as f:
+                cur.copy_expert(
+                    f"COPY {STAGING_TABLE} FROM STDIN WITH CSV HEADER", f)
+        conn.commit()
+    logger.info("Staging consultations charge -- %d lignes", row_count())
+\end{lstlisting}
+
+\subsection{Vue d'ensemble de la résilience -- logigramme de décision}
+
+\begin{figure}[htbp]
+\centering
+\resizebox{0.92\linewidth}{!}{%
+\begin{tikzpicture}[
+    proc/.style={draw=cesiblue, fill=cesiblue!8, rectangle, rounded corners=4pt,
+                 minimum width=3.6cm, minimum height=0.75cm,
+                 align=center, font=\sffamily\scriptsize},
+    dec/.style={draw=orange!70, fill=orange!10, diamond, aspect=2.5,
+                minimum width=3.8cm, minimum height=0.9cm,
+                align=center, font=\sffamily\scriptsize\bfseries},
+    term/.style={draw=green!50!black, fill=green!8, rounded rectangle,
+                 minimum width=3.6cm, minimum height=0.75cm,
+                 align=center, font=\sffamily\scriptsize\bfseries},
+    fail/.style={draw=red!60, fill=red!8, rectangle, rounded corners=4pt,
+                 minimum width=3.4cm, minimum height=0.75cm,
+                 align=center, font=\sffamily\scriptsize},
+    >=Stealth, node distance=0.7cm
+]
+% ── Chemin principal (colonne gauche) ─────────────────────────
+\node[term] (start)    {\textbf{Déclenchement DAG}\\00:00 quotidien};
+\node[proc, below=of start]  (ext)   {\texttt{extract\_*()} -- Bronze};
+\node[dec,  below=of ext]    (d1)    {Erreur\\extraction ?};
+\node[proc, below=of d1]     (trunc) {\texttt{TRUNCATE} + \texttt{COPY}\\Staging Silver};
+\node[proc, below=of trunc]  (trans) {Transformations SQL\\Gold (\texttt{transform/*.sql})};
+\node[proc, below=of trans]  (valid) {\texttt{validate\_gold.py}};
+\node[dec,  below=of valid]  (d2)    {Validation\\OK ?};
+\node[term, below=of d2]     (notif) {\texttt{notify\_success}\\DAG terminé};
+
+% ── Branche erreur extraction (droite) ─────────────────────────
+\node[dec,  right=2.4cm of d1]   (d3)  {Fallback\\geo dispo ?};
+\node[proc, above=0.7cm of d3]   (fb)  {Reconstruire\\dim\_geographie};
+\node[proc, below=of d3]         (ret) {\texttt{retries=1}\\délai 5 min};
+\node[dec,  below=of ret]        (d4)  {Encore\\erreur ?};
+\node[fail, below=of d4]         (alrt){Alerte -- DAG Failed\\Log Airflow};
+
+% ── Branche validation KO ─────────────────────────────────────
+\node[fail, right=2.4cm of d2]   (warnv){Avertissement\\Qualité Gold};
+
+% ── Flèches chemin principal ──────────────────────────────────
+\draw[->] (start) -- (ext);
+\draw[->] (ext)   -- (d1);
+\draw[->] (d1)    -- node[left,  font=\sffamily\tiny] {non} (trunc);
+\draw[->] (trunc) -- (trans);
+\draw[->] (trans) -- (valid);
+\draw[->] (valid) -- (d2);
+\draw[->] (d2)    -- node[left,  font=\sffamily\tiny] {oui} (notif);
+
+% ── Flèches branche erreur extraction ─────────────────────────
+\draw[->] (d1.east)  -- node[above, font=\sffamily\tiny] {oui} (d3.west);
+\draw[->] (d3.north) -- node[right, font=\sffamily\tiny] {oui} (fb.south);
+\draw[-]  (fb.west)  -| ($(d1.east)!0.3!(d3.west)$)
+          |- node[left,font=\sffamily\tiny,pos=0.8]{reprise} (trunc.east);
+\draw[->] (d3.south) -- node[right, font=\sffamily\tiny] {non} (ret);
+\draw[->] (ret)      -- (d4);
+\draw[->] (d4.east)  -- node[above, font=\sffamily\tiny] {non}
+          ($(d4.east)+(1.2,0)$) |- (trunc.east);
+\draw[->] (d4)       -- node[left, font=\sffamily\tiny] {oui} (alrt);
+
+% ── Flèche validation KO ──────────────────────────────────────
+\draw[->] (d2.east) -- node[above, font=\sffamily\tiny] {non} (warnv.west);
+\end{tikzpicture}}
+\caption{Logigramme de résilience : routage préventif des anomalies d'extraction, fallback géographique et contrôle qualité Gold}
+\label{fig:logigramme_resilience}
+\end{figure}
+
+\textbf{Comment lire ce logigramme.} La colonne centrale (rectangles bleus, losanges orange) représente le \textbf{chemin nominal} de succès - le scénario quotidien quand tout se passe bien. Les branches vers la droite matérialisent les \textbf{chemins de récupération} : d'abord le fallback géographique (si la source est absente mais les données régionales existent ailleurs), puis le mécanisme de retry Airflow (une tentative après 5 minutes), et enfin l'échec contrôlé avec alerte. Le rectangle rouge \textit{Alerte -- DAG Failed} est un succès opérationnel : une erreur connue et loguée vaut mieux qu'un pipeline silencieusement corrompu. La branche inférieure droite (\textit{Avertissement Qualité Gold}) active \texttt{validate\_gold.py} même en cas de validation imparfaite, permettant un run dégradé plutôt qu'une interruption totale.
+
+\subsection{Ce que notre modèle ne sait pas encore faire -- limites documentées}
+
+Documenter les limites d'un système est un acte de rigueur, pas un aveu de faiblesse. Voici les contraintes identifiées lors de nos tests du 08/06/2026, avec leur cause et le contournement mis en \oe uvre :
+
+\begin{warningbox}[Limites identifiées -- tests du 08/06/2026]
+\begin{itemize}
+    \item \textbf{Mismatch \texttt{id\_etablissement} / FINESS :} les identifiants internes des consultations sont sur 11 chiffres (ID opérationnel interne), alors que le référentiel FINESS officiel utilise 9 chiffres. La jointure nominale entre \texttt{fait\_consultation} et \texttt{dim\_etablissement} échoue pour le KPI 1. \textit{Contournement} : affichage fallback \texttt{'Etab. ' || finess} dans la vue KPI. \textit{Correction envisagée} : table de correspondance ID$\rightarrow$FINESS à alimenter depuis le système source.
+    \item \textbf{\texttt{fait\_hospitalisation} non alimentée :} la table existe et les index sont créés, mais la source de données hospitalisation n'est pas encore mappée. Les KPI 3 à 5 retournent 0 ligne. \textit{Prochaine étape} : connecter la source HiveQL Parquet dès que le flux d'hospitalisation sera disponible.
+    \item \textbf{SCD Type 1 -- pas d'historique :} notre clause \texttt{ON CONFLICT DO UPDATE} écrase les libellés modifiés sans conserver l'état précédent. Si un établissement change de région, les consultations historiques seront rattachées à la nouvelle région. Ce choix simplifie l'architecture mais limite les analyses rétrospectives.
+\end{itemize}
+\end{warningbox}
+
+\clearpage
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Implémentation DDL/DML et constellation finale}
+% ─────────────────────────────────────────────────────────────────────────────
+
+\subsection{Les défis concrets de la mise en constellation}
+Modéliser une constellation sur papier est une chose ; la faire fonctionner sur des données réelles en est une autre. Trois problématiques concrètes ont émergé lors de l'implémentation et ont requis des solutions DDL/DML spécifiques :
+
+\begin{itemize}
+    \item \textbf{Clé naturelle et Upsert :} \texttt{dim\_etablissement} utilise \texttt{finess} (TEXT) comme clé primaire naturelle plutôt qu'une clé de substitution artificielle. L'Upsert \texttt{ON CONFLICT (finess) DO UPDATE} permet de rejouer le pipeline quotidiennement sans erreur d'insertion doublon, tout en mettant à jour les libellés si l'établissement a changé de nom.
+    \item \textbf{Identifiants régionaux auto-incrémentaux :} contrairement à \texttt{dim\_\allowbreak etablissement}, \texttt{dim\_geographie} n'a pas de clé naturelle stable entre les sources. Notre CTE (\texttt{WITH new\_rows AS...}) évalue \texttt{MAX(id\_geo)} existant et attribue un identifiant séquentiel aux nouvelles régions, garantissant l'absence de collision.
+    \item \textbf{Agrégation décès et correction du mapping INSEE :} \texttt{fait\_deces} est agrégé à la granularité \texttt{(id\_temps, id\_geo)}, ce qui réduit 25 M de lignes à $\sim$3\,500 couples. Un bug de jointure initial venait du découpage régional post-2016 : le code ``02'' des fichiers anciens correspond à la région ``84'' (Auvergne-Rhône-Alpes) dans le référentiel actuel. Un mapping de correction est appliqué avant le chargement.
+    \item \textbf{Orphelins de jointure et robustesse :} certains codes diagnostic présents dans les consultations n'ont pas d'entrée dans \texttt{dim\_diagnostic}. Plutôt que de rejeter ces lignes (ce qui fausserait les comptages), un \texttt{LEFT JOIN} associé à \texttt{COALESCE} les redirige vers \texttt{'UNKNOWN'} - conservant la ligne factuelle tout en signalant l'anomalie.
+\end{itemize}
+
+\subsection{DDL Gold -- scripts d'initialisation et indexation préventive}
+
+\begin{lstlisting}[language=SQL, caption=003\_create\_gold\_core.sql -- index B-Tree sur les tables de faits]
+-- Index B-Tree pour requetes OLAP Metabase (filtrage temporel)
+CREATE INDEX IF NOT EXISTS idx_fait_consultation_date
+    ON gold.fait_consultation(id_temps);
+CREATE INDEX IF NOT EXISTS idx_fait_consultation_etab
+    ON gold.fait_consultation(finess);
+
+CREATE INDEX IF NOT EXISTS idx_fait_deces_date
+    ON gold.fait_deces(id_temps);
+
+CREATE INDEX IF NOT EXISTS idx_fait_satisfaction_date
+    ON gold.fait_satisfaction(id_temps);
+CREATE INDEX IF NOT EXISTS idx_fait_satisfaction_etab
+    ON gold.fait_satisfaction(finess);
+
+-- Table de faits hospitalisation (prete pour alimentation future)
+CREATE TABLE IF NOT EXISTS gold.fait_hospitalisation (
+    id_fait          SERIAL PRIMARY KEY,
+    id_temps         INT REFERENCES gold.dim_temps(id_temps),
+    id_patient       INT REFERENCES gold.dim_patient(id_patient),
+    code_diag        TEXT,
+    nb_hospitalisation INT
+);
+CREATE INDEX IF NOT EXISTS idx_fait_hospitalisation_date
+    ON gold.fait_hospitalisation(id_temps);
+\end{lstlisting}
+
+\begin{lstlisting}[language=SQL, caption={Cible HiveQL Parquet pour fait\_hospitalisation -- perspective hive/}]
+CREATE TABLE IF NOT EXISTS gold.fait_hospitalisation (
+    id_fait_hospitalisation INT,
+    id_temps   INT,
+    id_patient INT,
+    code_diag  STRING,
+    nb_hospitalisation INT
+)
+STORED AS PARQUET;
+
+INSERT OVERWRITE TABLE gold.fait_hospitalisation
+SELECT
+    row_number() OVER (ORDER BY h.Id_patient, h.Code_diagnostic)
+        AS id_fait_hospitalisation,
+    t.id_temps,
+    cast(h.Id_patient AS INT),
+    h.Code_diagnostic,
+    CASE WHEN h.Jour_Hospitalisation IS NULL
+          OR trim(h.Jour_Hospitalisation) = '' THEN NULL
+         ELSE cast(h.Jour_Hospitalisation AS INT)
+    END
+FROM bronze.hospitalisations_raw h
+LEFT JOIN gold.dim_temps t
+    ON t.date_complete = to_date(trim(h.Date_Entree), 'dd-MM-yyyy');
+\end{lstlisting}
+
+\clearpage
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Qualité, conformité RGPD et traçabilité}
+% ─────────────────────────────────────────────────────────────────────────────
+
+\subsection{Privacy by Design -- la conformité intégrée dès la conception}
+Les données que nous traitons ne sont pas ordinaires. Un dossier de consultation médicale contient l'identité du patient, son âge, son sexe, son diagnostic et le nom du praticien. Un fichier de décès relie une personne à une date et un lieu. Ces données relèvent de la \textbf{catégorie spéciale} de l'Article 9 RGPD - les données de santé - et leur traitement est soumis à des obligations strictes de minimisation, pseudonymisation et traçabilité.
+
+\begin{warningbox}[Article 9 RGPD -- Données de santé sensibles]
+Nos données cliniques (consultations, diagnostics, décès) sont des données de santé au sens de l'Article 9 RGPD. Toute exposition non justifiée d'une donnée nominative dans un environnement analytique constitue une violation. Notre réponse : la conformité est architecturale, pas documentaire.
+\end{warningbox}
+
+Plutôt que d'ajouter une couche de conformité \textit{a posteriori}, nous avons intégré la protection des données \textit{dès l'extraction} - c'est le principe du \textbf{Privacy by Design}. Concrètement : les colonnes nominatives (nom, prénom, NSS, adresse) présentes en Bronze ne sont jamais projetées vers Gold. Les verbatims libres des enquêtes de satisfaction (source potentielle de réidentification indirecte) sont supprimés avant le chargement. Seuls l'âge et le sexe - nécessaires aux KPI de segmentation - sont conservés dans \texttt{dim\_patient}.
+
+\subsection{Le principe en action -- projection SQL minimisante sur dim\_patient}
+
+\begin{lstlisting}[language=SQL, caption=Filtre de minimisation RGPD -- dim\_patient (conservation age et sexe uniquement)]
+CREATE TABLE IF NOT EXISTS gold.dim_patient (
+    id_patient INT PRIMARY KEY,
+    sexe       CHAR(1),
+    age        INT
+);
+
+INSERT INTO gold.dim_patient (id_patient, sexe, age)
+SELECT
+    cast(Id_Patient AS INT),
+    CASE WHEN lower(trim(Sexe)) LIKE 'm%' THEN 'M'
+         WHEN lower(trim(Sexe)) LIKE 'f%' THEN 'F'
+         ELSE NULL END,
+    CASE WHEN trim(Age) = '' THEN NULL
+         ELSE cast(Age AS INT) END
+FROM bronze.patient_raw
+WHERE Id_Patient IS NOT NULL
+  AND trim(Id_Patient) != ''
+ON CONFLICT (id_patient) DO UPDATE
+    SET sexe = EXCLUDED.sexe,
+        age  = EXCLUDED.age;
+\end{lstlisting}
+
+\subsection{Voie d'amélioration -- renforcement de la pseudonymisation}
+Notre implémentation actuelle utilise un masquage simple (\texttt{'PATIENT\_' || id}) pour les identifiants de l'échantillon décès. Ce mécanisme, suffisant pour un environnement de développement, présente une vulnérabilité en production : un attaquant connaissant la plage d'identifiants peut reconstituer la correspondance par force brute. La prochaine étape consiste à implémenter l'algorithme \textbf{HMAC-SHA256} décrit dans le Livrable~1, qui produit un hachage irréversible résistant aux attaques par dictionnaire, tout en préservant la possibilité de vérifier une correspondance sans stocker la clé en clair.
+
+\clearpage
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Performance, mesures et synthèse technique}
+% ─────────────────────────────────────────────────────────────────────────────
+
+\subsection{Indexation préventive -- anticiper les requêtes Metabase}
+Un million de consultations ne pose aucun problème à PostgreSQL - à condition de ne pas les scanner ligne par ligne à chaque requête Metabase. L'indexation est la réponse architecturale à ce défi : nous avons créé les index B-Tree \textbf{dès l'initialisation du schéma}, avant même le premier chargement de données.
+
+Le raisonnement est simple : les 9 vues KPI Metabase ont toutes au moins un filtre temporel (\texttt{WHERE id\_temps BETWEEN ...}) ou un regroupement par établissement (\texttt{GROUP BY finess}). Sans index, PostgreSQL ferait un \textit{sequential scan} complet des 1 million de lignes à chaque requête. Avec les index B-Tree sur \texttt{id\_temps} et \texttt{finess}, la sélectivité devient quasi-instantanée. Les dimensions elles-mêmes sont compactes (\texttt{dim\_temps} : 2\,603 dates, \texttt{dim\_geographie} : 11 régions), ce qui signifie que les jointures résident en mémoire cache. L'objectif du Livrable~1 visait des gains de 30\,s à 3\,s sur les requêtes transversales ; notre architecture d'index matérialise cette trajectoire.
+
+\subsection{Bilan volumétrique -- ce que notre pipeline a réellement produit}
+
+% TikZ -- Barres horizontales volumes Gold (largeurs pré-calculées)
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[font=\sffamily\footnotesize]
+    \colorlet{barA}{cesiblue!80}
+    \colorlet{barB}{cesiblue!60}
+    \colorlet{barC}{cesiblue!45}
+    \colorlet{barD}{cesiblue!30}
+    \colorlet{barE}{green!50!black}
+    \colorlet{barF}{cesigray}
+    \colorlet{barG}{cesigray!55}
+    \def\barH{0.44}
+    \def\sep{0.74}
+    % Ligne 0 -- fait_consultation
+    \fill[barA] (0,0)         rectangle (8.00, \barH);
+    \node[anchor=east] at (-0.15, \barH/2) {\texttt{fait\_consultation}};
+    \node[anchor=west, text=barA, font=\bfseries] at (8.12, \barH/2) {1\,027\,157};
+    % Ligne 1 -- dim_etablissement
+    \fill[barB] (0,\sep)      rectangle (3.16, \sep+\barH);
+    \node[anchor=east] at (-0.15, \sep+\barH/2) {\texttt{dim\_etablissement}};
+    \node[anchor=west, text=barB, font=\bfseries] at (3.28, \sep+\barH/2) {404\,849};
+    % Ligne 2 -- dim_patient
+    \fill[barC] (0,2*\sep)    rectangle (0.78, 2*\sep+\barH);
+    \node[anchor=east] at (-0.15, 2*\sep+\barH/2) {\texttt{dim\_patient}};
+    \node[anchor=west, text=barC, font=\bfseries] at (0.90, 2*\sep+\barH/2) {100\,000};
+    % Ligne 3 -- fait_satisfaction
+    \fill[barE] (0,3*\sep)    rectangle (0.35, 3*\sep+\barH);
+    \node[anchor=east] at (-0.15, 3*\sep+\barH/2) {\texttt{fait\_satisfaction}};
+    \node[anchor=west, text=barE, font=\bfseries] at (0.47, 3*\sep+\barH/2) {8\,984};
+    % Ligne 4 -- stg_deces (agregat)
+    \fill[barD] (0,4*\sep)    rectangle (0.55, 4*\sep+\barH);
+    \node[anchor=east] at (-0.15, 4*\sep+\barH/2) {\texttt{stg\_deces} (agrégé)};
+    \node[anchor=west, text=barD, font=\bfseries] at (0.67, 4*\sep+\barH/2) {$\sim$3\,500};
+    % Ligne 5 -- dim_temps
+    \fill[barF] (0,5*\sep)    rectangle (0.20, 5*\sep+\barH);
+    \node[anchor=east] at (-0.15, 5*\sep+\barH/2) {\texttt{dim\_temps}};
+    \node[anchor=west, text=barF, font=\bfseries] at (0.32, 5*\sep+\barH/2) {2\,603};
+    % Ligne 6 -- dim_geographie
+    \fill[barG] (0,6*\sep)    rectangle (0.09, 6*\sep+\barH);
+    \node[anchor=east] at (-0.15, 6*\sep+\barH/2) {\texttt{dim\_geographie}};
+    \node[anchor=west, text=barG, font=\bfseries] at (0.21, 6*\sep+\barH/2) {11};
+    % Axe X
+    \draw[->] (0,-0.35) -- (8.9,-0.35)
+        node[right, font=\sffamily\scriptsize] {Lignes chargées};
+    \foreach \x/\lbl in {0/0, 2/250k, 4/500k, 6/750k, 8/1M} {
+        \draw[cesigray] (\x,-0.40) -- (\x,-0.28);
+        \node[below, font=\sffamily\tiny, text=cesigray] at (\x,-0.42) {\lbl};
+    }
+    \node[above, font=\sffamily\small\bfseries, text=cesiblue]
+        at (4.0, 5.0) {Volumétrie Gold -- run 08/06/2026};
+\end{tikzpicture}
+\caption{Volumes chargés par entité Gold -- 100\,\% de succès sur les entités alimentées, validés par \texttt{validate\_gold.py}}
+\label{fig:ratios_succes}
+\end{figure}
+
+\textbf{Lecture du graphique.} L'axe horizontal représente le nombre de lignes chargées (échelle 0 à 1\,M). \texttt{fait\_consultation} (bleu foncé) domine avec plus d'un million de lignes - c'est le c\oe ur analytique du système. \texttt{dim\_etablissement} suit avec 404\,849 entrées, reflétant la richesse du référentiel FINESS national. Les barres courtes (\texttt{dim\_geographie} : 11, \texttt{dim\_temps} : 2\,603) confirment la compacité des dimensions conformes - une propriété essentielle pour la performance des jointures Metabase.
+
+\subsection{Perspective de montée en charge -- la route vers Hive}
+Notre implémentation PostgreSQL gère efficacement le volume actuel (1 M de consultations). Mais un hôpital de grande taille peut générer plusieurs millions d'hospitalisations par an. Au-delà de 10 M de lignes avec de nombreuses colonnes médicales, PostgreSQL commence à montrer ses limites en latence sur les agrégations analytiques.
+
+C'est pourquoi notre brique \texttt{hive/} et le format \textbf{Parquet} colonnaire ont été préparés dès maintenant : ils permettront, le moment venu, de basculer le traitement des hospitalisations massives vers un moteur optimisé pour les scans colonnaires, sans refactoriser l'ensemble du pipeline.
+
+\subsection{Synthèse -- un entrepôt opérationnel de bout en bout}
+
+\begin{successbox}[Bilan Livrable 2 -- Infrastructure opérationnelle]
+Ce Livrable~2 démontre la viabilité complète de notre infrastructure. Nous sommes partis d'une question - \textit{comment corréler consultations, décès et satisfaction au niveau régional ?} - et nous avons livré un pipeline bout-en-bout qui y répond quotidiennement.\\[6pt]
+\textbf{Volumes produits :} 1\,027\,157 consultations $\cdot$ 404\,849 établissements $\cdot$ 8\,984 scores de satisfaction $\cdot$ 24,7 M de décès réduits à $\sim$3\,500 points Gold.\\[4pt]
+\textbf{Fiabilité :} DAG Airflow avec 100\,\% de succès, mécanismes de fallback géographique et de retry, validation qualité automatisée.\\[4pt]
+\textbf{Conformité :} Privacy by Design dès l'extraction, minimisation stricte de \texttt{dim\_patient}, pseudonymisation en place.\\[4pt]
+\textbf{Prochaine étape :} restitution visuelle Metabase et alimentation de \texttt{fait\_hospitalisation} via la brique Hive/Parquet.
+\end{successbox}
+
+\clearpage
+% ==========================================
+% GLOSSAIRE
+% ==========================================
+\chapter*{Glossaire}
+\addcontentsline{toc}{chapter}{Glossaire}
+\markboth{Glossaire}{Glossaire}
+
+\begin{longtable}{@{} p{3.8cm} p{10.8cm} @{}}
+\toprule
+\textbf{Terme} & \textbf{Définition} \\ \midrule
+\endfirsthead
+\multicolumn{2}{l}{\small\itshape (suite du glossaire)} \\ \midrule
+\textbf{Terme} & \textbf{Définition} \\ \midrule
+\endhead
+\bottomrule
+\endfoot
+
+\textbf{Architecture Medallion} &
+    Paradigme d'organisation des données en trois couches progressivement raffinées :
+    Bronze (brut), Silver (staging nettoyé), Gold (exposition analytique). \\[4pt]
+
+\textbf{Airflow (Apache)} &
+    Orchestrateur de flux de données open source. Un DAG (\textit{Directed Acyclic Graph})
+    définit les dépendances entre tâches. Notre pipeline utilise le
+    \texttt{LocalExecutor} avec planification quotidienne à 00:00. \\[4pt]
+
+\textbf{B-Tree} &
+    Structure d'index PostgreSQL à arbre équilibré. Utilisé sur \texttt{id\_temps}
+    et \texttt{finess} des tables de faits pour éviter les \textit{full sequential
+    scans} lors des requêtes BI OLAP. \\[4pt]
+
+\textbf{Bronze} &
+    Zone d'ingestion brute. Les fichiers sources (CSV, dumps) y sont stockés
+    tels quels, sans transformation, garantissant la traçabilité et la
+    réversibilité. \\[4pt]
+
+\textbf{CHU} &
+    Cloud Healthcare Unit. Désigne l'entité hospitalière dont nous modélisons
+    le système décisionnel. \\[4pt]
+
+\textbf{Constellation (modèle)} &
+    Extension du schéma en étoile : plusieurs tables de faits partagent des
+    dimensions communes dites \textit{conformes}. Notre modèle partage
+    \texttt{dim\_temps} et \texttt{dim\_geographie} entre trois tables de faits. \\[4pt]
+
+\textbf{DAG} &
+    \textit{Directed Acyclic Graph}. Graphe orienté sans cycle représentant
+    l'enchaînement et les dépendances des tâches Airflow. \\[4pt]
+
+\textbf{dim\_*} &
+    Préfixe des tables de dimensions dans le schéma Gold :
+    \texttt{dim\_temps}, \texttt{dim\_patient}, \texttt{dim\_etablissement},
+    \texttt{dim\_professionnel}, \texttt{dim\_diagnostic}, \texttt{dim\_geographie}. \\[4pt]
+
+\textbf{Docker / Docker Compose} &
+    Technologie de conteneurisation. \texttt{docker-compose.yml} orchestre
+    nos 8 services (Airflow $\times$3, PostgreSQL, Metabase $\times$2, logserver $\times$2)
+    en un réseau isolé et reproductible. \\[4pt]
+
+\textbf{ETL} &
+    \textit{Extract, Transform, Load}. Pipeline de traitement : extraction
+    des sources brutes, transformation (nettoyage, normalisation), chargement
+    dans l'entrepôt analytique. \\[4pt]
+
+\textbf{fait\_*} &
+    Préfixe des tables de faits dans le schéma Gold : \texttt{fait\_consultation},
+    \texttt{fait\_deces}, \texttt{fait\_satisfaction}, \texttt{fait\_hospitalisation}
+    (non alimentée). \\[4pt]
+
+\textbf{FINESS} &
+    Fichier National des Établissements Sanitaires et Sociaux. Identifiant
+    officiel à 9 chiffres des établissements de santé français. \\[4pt]
+
+\textbf{Gold} &
+    Zone d'exposition analytique. Contient la constellation conforme
+    requêtée par Metabase via les 9 vues KPI du fichier
+    \texttt{006\_create\_metabase\_views.sql}. \\[4pt]
+
+\textbf{Hive (Apache)} &
+    Entrepôt de données Hadoop supportant le format Parquet colonnaire.
+    Notre brique \texttt{hive/} est préparée pour les hospitalisations
+    massives futures, sans être active en production courante. \\[4pt]
+
+\textbf{IaC} &
+    \textit{Infrastructure as Code}. Principe selon lequel l'environnement
+    d'exécution est défini et versionné sous forme de code (ici,
+    \texttt{docker-compose.yml} et scripts SQL \texttt{sql/init/}). \\[4pt]
+
+\textbf{KPI} &
+    \textit{Key Performance Indicator}. Notre solution expose 9 KPIs :
+    taux de consultation, mortalité par région, satisfaction par établissement,
+    évolution temporelle, etc. \\[4pt]
+
+\textbf{LocalExecutor} &
+    Mode d'exécution Airflow exécutant les tâches en processus parallèles
+    sur la même machine (sans cluster Celery/Kubernetes). \\[4pt]
+
+\textbf{Metabase} &
+    Outil de visualisation BI open source (v0.50). Consomme les vues
+    PostgreSQL du schéma Gold pour générer les tableaux de bord KPI. \\[4pt]
+
+\textbf{OOM Kill} &
+    \textit{Out-Of-Memory Kill}. Arrêt forcé d'un processus par le système
+    d'exploitation lorsque la mémoire vive est épuisée. Observé lors du
+    chargement naïf des 25 M lignes de décès. \\[4pt]
+
+\textbf{OLAP} &
+    \textit{Online Analytical Processing}. Paradigme de requêtage analytique
+    orienté agrégations sur de grands volumes, par opposition à l'OLTP
+    transactionnel. \\[4pt]
+
+\textbf{Parquet} &
+    Format de stockage colonnaire binaire, compressé, optimisé pour les
+    lectures analytiques sur de grandes tables (utilisé par Hive). \\[4pt]
+
+\textbf{Privacy by Design} &
+    Principe RGPD selon lequel la protection des données personnelles est
+    intégrée dès la conception du système, et non ajoutée \textit{a posteriori}. \\[4pt]
+
+\textbf{RGPD} &
+    Règlement Général sur la Protection des Données (UE 2016/679).
+    Nos données de santé relèvent de l'Article 9 (catégories sensibles)
+    imposant minimisation et pseudonymisation. \\[4pt]
+
+\textbf{SCD Type 1} &
+    \textit{Slowly Changing Dimension de type 1}. Stratégie écrasant l'état
+    historique d'une dimension lors de sa mise à jour (implémentée via
+    \texttt{ON CONFLICT DO UPDATE}). \\[4pt]
+
+\textbf{Silver} &
+    Zone de staging. Les données brutes y sont typées, normalisées et
+    validées avant insertion dans le schéma Gold. Les tables \texttt{stg\_*}
+    sont tronquées (\texttt{TRUNCATE}) à chaque run pour garantir l'idempotence. \\[4pt]
+
+\textbf{Upsert} &
+    Opération combinant \texttt{INSERT} et \texttt{UPDATE} :
+    \texttt{INSERT ... ON CONFLICT DO UPDATE}. Permet la mise à jour des
+    dimensions sans erreur de duplication de clé. \\[4pt]
+
+\textbf{validate\_gold.py} &
+    Script de contrôle qualité final du DAG. Vérifie les volumes chargés
+    dans chaque entité Gold et lève une exception si les seuils ne sont pas
+    atteints. \\[4pt]
+
+\bottomrule
+\end{longtable}
+
+\end{document}
